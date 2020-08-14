@@ -2,7 +2,7 @@
 and files for a new project."""
 
 
-def milestone_1():
+def get_names():
     """Take input from user for the project name and author name. Print out
     the information provided.
 
