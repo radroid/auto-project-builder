@@ -10,6 +10,7 @@ import pathlib
 from pathlib import Path
 import re
 from shutil import rmtree
+from jinja2 import Template
 
 
 class ProjectBuilder:
@@ -77,7 +78,7 @@ class ProjectBuilder:
 
         print('\n### Project Details ###')
         print(f'Project name: {proj_name}')
-        print(f'Author\'s name: {author_name}\n')
+        print(f'Author:       {author_name}\n')
         return proj_name, author_name
 
     @staticmethod
@@ -139,6 +140,7 @@ class ProjectBuilder:
         new_dir = self.path / self.proj_name
         new_dir.mkdir(exist_ok=True)
         self.proj_dir = new_dir
+        print(f'Created directory: {new_dir}')
         return new_dir
 
     def create_readme(self):
@@ -161,6 +163,7 @@ class ProjectBuilder:
         with readme.open('w') as write:
             write.write('Hello World!\n')
 
+        print(f'Created README.md: {readme}')
         return readme
 
     def add_to_readme(self):
@@ -181,11 +184,20 @@ class ProjectBuilder:
         elif self.proj_dir is None or not self.proj_dir.exists():
             raise FileNotFoundError('You need to create a README.md file.')
 
+        path_temp = Path.cwd() / 'README.md.template'
+
+        if not path_temp.exists():
+            raise FileNotFoundError('No README.md file template was found in '
+                                    'the current directory.')
+
+        readme_temp_str = path_temp.open('r').read()
+        readme_template = Template(readme_temp_str)
+
+        template_dict = {'project_name': self.proj_name,
+                         'author_name': self.author}
+        text_to_write = readme_template.render(template_dict)
+
         path = self.proj_dir / 'README.md'
-
-        text_to_write = f'# {self.proj_name}\nWelcome to {self.proj_name}!\n' \
-                        f'\n\n\nCreated by {self.author}.'
-
         with path.open('w') as readme:
             readme.write(text_to_write)
 
