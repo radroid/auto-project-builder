@@ -184,7 +184,7 @@ class ProjectBuilder:
         elif self.proj_dir is None or not self.proj_dir.exists():
             raise FileNotFoundError('You need to create a README.md file.')
 
-        path_temp = Path.cwd() / 'README.md.template'
+        path_temp = Path.cwd() / 'templates' / 'README.md.template'
 
         if not path_temp.exists():
             raise FileNotFoundError('No README.md file template was found in '
