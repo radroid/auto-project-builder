@@ -103,7 +103,7 @@ def test_create_readme_text(pb):
 
 
 # Test Milestone 3b. Add text to Readme.md
-def test_add_to_readme_1(pb):
+def test_add_to_readme(pb):
     proj_name = 'test'
     author = 'Raj Dholakia'
     pb.create_dir()
@@ -111,7 +111,7 @@ def test_add_to_readme_1(pb):
     pb.add_to_readme()
 
     text_to_write = f'# {proj_name}\nWelcome to {proj_name}!\n\n\n' \
-                    f'\nCreated by {author}.'
+                    f'Created by {author}.'
 
     with readme.open('r') as read:
         text_written = read.read()
