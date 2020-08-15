@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 
 
+# Test Milestone 1. First User Input
 def test_get_names():
     set_keyboard_input(["test_1", "Raj Dholakia"])
     names_tup = auto_pb.get_names()
@@ -14,6 +15,7 @@ def test_get_names():
     assert names_tup == ("test_1", "Raj Dholakia")
 
 
+# Test Milestone 2. Create Directory
 def test_create_dir_creation_1():
     path = Path.cwd()
     new_dir = auto_pb.create_dir(path, 'test_1')
@@ -40,3 +42,40 @@ def test_create_dir_error_2():
     with pytest.raises(TypeError):
         auto_pb.create_dir(path, 'test_1')
     path.unlink()
+
+
+# Test Milestone 3. Create Readme.md
+def test_create_readme_creation_1():
+    path = Path.cwd()
+    readme = auto_pb.create_readme(path)
+    assert readme.exists()
+    readme.unlink()
+
+
+def test_create_readme_creation_2():
+    path = Path.cwd()
+    readme = auto_pb.create_readme(str(path))
+    assert readme.exists()
+    readme.unlink()
+
+
+def test_create_readme_error_1():
+    path = Path.cwd() / 'non_existant'
+    with pytest.raises(FileNotFoundError):
+        auto_pb.create_readme(path)
+
+
+def test_create_readme_error_2():
+    path = Path.cwd() / 'test.txt'
+    path.touch()
+    with pytest.raises(TypeError):
+        auto_pb.create_readme(path)
+    path.unlink()
+
+
+def test_create_readme_text():
+    path = Path.cwd()
+    readme = auto_pb.create_readme(path)
+    with readme.open('r') as read:
+        text = read.read()
+    assert text == 'Hello World!\n'
