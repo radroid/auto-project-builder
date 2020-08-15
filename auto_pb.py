@@ -8,13 +8,47 @@ Update: The refactored code makes use of a class to modularise project
 
 import pathlib
 from pathlib import Path
+import re
+from shutil import rmtree
 
 
 class ProjectBuilder:
-    """The class manages the newly created project folder."""
+    """The class manages the newly created project folder.
 
-    def __init__(self):
-        pass
+    Attributes:
+        proj_name (str): name of project entered by the user.
+        author_name (str): name of the author entered by the user.
+        path (pathlib.PosixPath): path to the directory where the project
+                                  directory is to be created.
+        proj_dir (pathlib.PosixPath): path to the project directory.
+    """
+
+    def __init__(self, path: str or pathlib.PosixPath = None):
+        """Instantiate an object.
+
+        Args:
+            path (str or pathlib.PosixPath, optional): for class attribute
+                                                       'path'. Defaults to
+                                                       None.
+
+        Raises:
+            FileNotFoundError: if the path provided does not exist.
+            TypeError: if the path provided is not a directory.
+        """
+        if path is None:
+            path = Path.cwd().parent
+        else:
+            if type(path) == str:
+                path = Path(path)
+
+            if not path.exists():
+                raise FileNotFoundError('The path provided, does not exist.')
+            if not path.is_dir():
+                raise TypeError('Please input a path to a directory.')
+
+        self.path = path
+        self.proj_dir = None
+        self.proj_name, self.author = self.get_names()
 
     def get_names(self):
         """Take input from user for the project name and author name. Print out
@@ -25,7 +59,18 @@ class ProjectBuilder:
             author_name (str): name of the author entered by the user.
         """
         print('\n> What would you like to name your project?')
-        proj_name = input()
+        for attempt in range(3):
+            proj_name = input().strip()
+            is_valid = self.valid_project_name(proj_name)
+            if is_valid:
+                break
+            else:
+                print('> Please enter a valid project name.')
+        else:
+            print('\n')
+            raise UserWarning('You ran out of attempts to enter a valid '
+                              'project name.')
+
         print('\n> Who is the author of the project? '
               '(Enter full name of the author)')
         author_name = input()
@@ -35,59 +80,82 @@ class ProjectBuilder:
         print(f'Author\'s name: {author_name}\n')
         return proj_name, author_name
 
-    def create_dir(self, path: str or pathlib.PosixPath, dir_name: str):
-        """The function creates a directory at the path specified and with the
-        name input.
+    @staticmethod
+    def valid_project_name(name: str):
+        """Checks if the 'name' provided is a valid name for the project.
 
         Args:
-            path (pathlib.PosixPath or str): path to directory creation
-                                             location.
-            dir_name (str): Name of the directory to be created.
+            name (str): name of the project or directory to be created.
 
         Raises:
-            FileNotFoundError: if the path provided does not exist.
-            TypeError: if the path provided is not valid or not a directory.
+            TypeError: if the provided argument is not a string.
+
+        Returns:
+            bool: if the name provided is valid or no.
+        """
+        if type(name) != str:
+            raise TypeError('Argument is not a string.')
+
+        # Setup Regex expressions
+        bad_start = re.match(r'^([-_]).+$', name)
+        bad_end = re.match(r'^.+([-_])$', name)
+        bad_chars = re.findall(r'(\W)', name)
+        bad_chars = set(bad_chars)
+        if '-' in bad_chars:
+            bad_chars.remove('-')
+
+        # Create space.
+        print('')
+
+        if name[0].isdigit():
+            print('> PROBLEM: The first character cannot be a number (digit).')
+            return False
+        elif name.find(' ') > -1:
+            print('> PROBLEM: No spaces allowed in the project name. '
+                  'Tip: Replace " " with "-", spaces with dashes.')
+            return False
+        elif bad_chars:
+            print(f'> PROBLEM: These special charaters cannot be used in the '
+                  f'project name: {tuple(bad_chars)}')
+            return False
+        elif bad_start:
+            print(f'PROBLEM: The project name cannot start with \''
+                  f'{bad_start.group(1)}\'.')
+            return False
+        elif bad_end:
+            print(f'PROBLEM: The project name cannot end with \''
+                  f'{bad_end.group(1)}\'.')
+            return False
+
+        return True
+
+    def create_dir(self):
+        """The function creates a directory at the path specified and with the
+        name input.
 
         Returns:
             pathlib.Posix object: This is the path to the directory created.
         """
-        if type(path) == str:
-            path = Path(path)
-
-        if not path.exists():
-            raise FileNotFoundError('The path provided, does not exist.')
-        if not path.is_dir():
-            raise TypeError('Please input a path to a directory.')
-
-        new_dir = path / dir_name
-        new_dir.mkdir()
+        new_dir = self.path / self.proj_name
+        new_dir.mkdir(exist_ok=True)
+        self.proj_dir = new_dir
         return new_dir
 
-    def create_readme(self, path: str or pathlib.PosixPath):
+    def create_readme(self):
         """The function creates a README.md file at the path specified.
-
-        Args:
-            path (strorpathlib.PosixPath): This is the path to the project
-                                           folder or directory where the readme
-                                           file is to be created.
-
-        Raises:
-            FileNotFoundError: if the path provided does not exist.
-            TypeError: if the path provided is not valid or not a directory.
 
         Returns:
             pathlib.Posix object: This is the path to the README.md file
                                   created.
+
+        Raises:
+            FileNotFoundError: if the no project directory is exists.
         """
-        if type(path) == str:
-            path = Path(path)
+        if self.proj_dir is None or not self.proj_dir.exists():
+            raise FileNotFoundError('Please create a project directory before'
+                                    'creating a README.md file.')
 
-        if not path.exists():
-            raise FileNotFoundError('The path provided, does not exist.')
-        if not path.is_dir():
-            raise TypeError('Please input a path to a directory.')
-
-        readme = path / 'README.md'
+        readme = self.proj_dir / 'README.md'
         readme.touch()
 
         with readme.open('w') as write:
@@ -95,12 +163,10 @@ class ProjectBuilder:
 
         return readme
 
-    def add_to_readme(self, path: str or pathlib.PosixPath, proj_name: str,
-                      author: str):
+    def add_to_readme(self):
         """The function adds text to a README.md file.
 
-        Args:
-            path (strorpathlib.PosixPath): path to the README.md file.
+        Notes:
             proj_name (str): name of the project, will be used as the main
                              heading in the README file
             author (str): name of the author, will be added at the bottom of
@@ -108,24 +174,27 @@ class ProjectBuilder:
 
         Raises:
             FileNotFoundError: if the path provided does not exists.
-            TypeError: if the path provided is not a valid README.md file.
         """
-        if type(path) == str:
-            path = Path(path)
+        if not self.path.exists():
+            raise FileNotFoundError('You need to create a project '
+                                    'directory and README.md file.')
+        elif self.proj_dir is None or not self.proj_dir.exists():
+            raise FileNotFoundError('You need to create a README.md file.')
 
-        if not path.exists():
-            raise FileNotFoundError('The path provided, does not exist.')
-        if not (path.is_file() or path.name == 'README.md'):
-            raise TypeError('Please input a path to a README.md file.')
+        path = self.proj_dir / 'README.md'
 
-        text_to_write = f'# {proj_name}\nWelcome to {proj_name}!\n\n\n' \
-                        f'\nCreated by {author}.'
+        text_to_write = f'# {self.proj_name}\nWelcome to {self.proj_name}!\n' \
+                        f'\n\n\nCreated by {self.author}.'
 
         with path.open('w') as readme:
             readme.write(text_to_write)
 
+    def __delete_all__(self):
+        rmtree(self.path)
+
 
 if __name__ == '__main__':
     pb = ProjectBuilder()
-    proj_name, author_name = pb.get_names()
-    new_dir = pb.create_dir(Path.cwd(), proj_name)
+    pb.create_dir()
+    pb.create_readme()
+    pb.add_to_readme()
