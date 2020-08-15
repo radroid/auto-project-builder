@@ -44,7 +44,7 @@ def test_create_dir_error_2():
     path.unlink()
 
 
-# Test Milestone 3. Create Readme.md
+# Test Milestone 3a. Create Readme.md
 def test_create_readme_creation_1():
     path = Path.cwd() / 'tests'
     readme = auto_pb.create_readme(path)
@@ -80,3 +80,28 @@ def test_create_readme_text():
         text = read.read()
     assert text == 'Hello World!\n'
     readme.unlink()
+
+
+# Test Milestone 3b. Add text to Readme.md
+def test_add_to_readme_1():
+    proj_name = 'test-1'
+    author = 'Raj Dholakia'
+    path = Path.cwd() / 'tests'
+    new_dir = auto_pb.create_dir(path, proj_name)
+    readme = auto_pb.create_readme(new_dir)
+    auto_pb.add_to_readme(readme, proj_name, author)
+
+    text_to_write = f"""# {proj_name}
+    Welcome to {proj_name}!
+
+
+
+    Created by {author}.
+    """
+
+    with readme.open('r') as read:
+        text_written = read.read()
+
+    assert text_to_write == text_written
+    readme.unlink()
+    new_dir.rmdir()
