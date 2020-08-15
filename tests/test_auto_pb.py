@@ -46,14 +46,14 @@ def test_create_dir_error_2():
 
 # Test Milestone 3. Create Readme.md
 def test_create_readme_creation_1():
-    path = Path.cwd()
+    path = Path.cwd() / 'tests'
     readme = auto_pb.create_readme(path)
     assert readme.exists()
     readme.unlink()
 
 
 def test_create_readme_creation_2():
-    path = Path.cwd()
+    path = Path.cwd() / 'tests'
     readme = auto_pb.create_readme(str(path))
     assert readme.exists()
     readme.unlink()
@@ -74,8 +74,9 @@ def test_create_readme_error_2():
 
 
 def test_create_readme_text():
-    path = Path.cwd()
+    path = Path.cwd() / 'tests'
     readme = auto_pb.create_readme(path)
     with readme.open('r') as read:
         text = read.read()
     assert text == 'Hello World!\n'
+    readme.unlink()
