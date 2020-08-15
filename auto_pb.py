@@ -87,6 +87,19 @@ def create_readme(path: str or pathlib.PosixPath):
 
 
 def add_to_readme(path: str or pathlib.PosixPath, proj_name: str, author: str):
+    """The function adds text to a README.md file.
+
+    Args:
+        path (strorpathlib.PosixPath): path to the README.md file.
+        proj_name (str): name of the project, will be used as the main heading
+                         in the README file
+        author (str): name of the author, will be added at the bottom of the
+                      README file.
+
+    Raises:
+        FileNotFoundError: if the path provided does not exists.
+        TypeError: if the path provided is not a valid README.md file.
+    """
     if type(path) == str:
         path = Path(path)
 
