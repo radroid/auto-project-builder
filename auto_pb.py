@@ -77,7 +77,7 @@ class ProjectBuilder:
 
         print('\n### Project Details ###')
         print(f'Project name: {proj_name}')
-        print(f'Author\'s name: {author_name}\n')
+        print(f'Author:       {author_name}\n')
         return proj_name, author_name
 
     @staticmethod
@@ -139,6 +139,7 @@ class ProjectBuilder:
         new_dir = self.path / self.proj_name
         new_dir.mkdir(exist_ok=True)
         self.proj_dir = new_dir
+        print(f'Created directory: {new_dir}')
         return new_dir
 
     def create_readme(self):
@@ -161,6 +162,7 @@ class ProjectBuilder:
         with readme.open('w') as write:
             write.write('Hello World!\n')
 
+        print(f'Created README.md: {readme}')
         return readme
 
     def add_to_readme(self):
