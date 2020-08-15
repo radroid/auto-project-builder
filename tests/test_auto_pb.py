@@ -2,9 +2,11 @@
 
 # import pytest
 from tests.tud_test_base import set_keyboard_input
-import auto_pb
+from auto_pb import ProjectBuilder
 from pathlib import Path
 import pytest
+
+auto_pb = ProjectBuilder()
 
 
 # Test Milestone 1. First User Input
@@ -78,8 +80,8 @@ def test_create_readme_text():
     readme = auto_pb.create_readme(path)
     with readme.open('r') as read:
         text = read.read()
-    assert text == 'Hello World!\n'
     readme.unlink()
+    assert text == 'Hello World!\n'
 
 
 # Test Milestone 3b. Add text to Readme.md
@@ -91,17 +93,12 @@ def test_add_to_readme_1():
     readme = auto_pb.create_readme(new_dir)
     auto_pb.add_to_readme(readme, proj_name, author)
 
-    text_to_write = f"""# {proj_name}
-    Welcome to {proj_name}!
-
-
-
-    Created by {author}.
-    """
+    text_to_write = f'# {proj_name}\nWelcome to {proj_name}!\n\n\n' \
+                    f'\nCreated by {author}.'
 
     with readme.open('r') as read:
         text_written = read.read()
 
-    assert text_to_write == text_written
     readme.unlink()
     new_dir.rmdir()
+    assert text_to_write == text_written
