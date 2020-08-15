@@ -54,6 +54,38 @@ def create_dir(path: str or pathlib.PosixPath, dir_name: str):
     return new_dir
 
 
+def create_readme(path: str or pathlib.PosixPath):
+    """[summary]
+
+    Args:
+        path (strorpathlib.PosixPath): This is the path to the project folder
+                                       or directory where the readme file is
+                                       to be created.
+
+    Raises:
+        FileNotFoundError: if the path provided does not exist.
+        TypeError: if the path provided is not valid or not a directory.
+
+    Returns:
+        pathlib.Posix object: This is the path to the README.md file created.
+    """
+    if type(path) == str:
+        path = Path(path)
+
+    if not path.exists():
+        raise FileNotFoundError('The path provided, does not exist.')
+    if not path.is_dir():
+        raise TypeError('Please input a path to a directory.')
+
+    readme = path / 'README.md'
+    readme.touch()
+
+    with readme.open('w') as write:
+        write.write('Hello World!\n')
+
+    return readme
+
+
 if __name__ == '__main__':
     proj_name, author_name = get_names()
     new_dir = create_dir(Path.cwd(), proj_name)
