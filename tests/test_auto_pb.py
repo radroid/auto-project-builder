@@ -94,21 +94,12 @@ def test_create_readme_creation_error(pb):
         pb.create_readme()
 
 
-def test_create_readme_text(pb):
-    pb.create_dir()
-    readme = pb.create_readme()
-    with readme.open('r') as read:
-        text = read.read()
-    assert text == 'Hello World!\n'
-
-
 # Test Milestone 3b. Add text to Readme.md
 def test_add_to_readme(pb):
     proj_name = 'test'
     author = 'Raj Dholakia'
     pb.create_dir()
     readme = pb.create_readme()
-    pb.add_to_readme()
 
     text_to_write = f'# {proj_name}\nWelcome to {proj_name}!\n\n\n' \
                     f'Created by {author}.'

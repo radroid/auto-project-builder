@@ -159,21 +159,15 @@ class ProjectBuilder:
 
         readme = self.proj_dir / 'README.md'
         readme.touch()
-
-        with readme.open('w') as write:
-            write.write('Hello World!\n')
-
         print(f'Created README.md: {readme}')
+        
+        self.__add_to_readme()
+        print('Text added to README.md')
+        
         return readme
 
-    def add_to_readme(self):
+    def __add_to_readme(self):
         """The function adds text to a README.md file.
-
-        Notes:
-            proj_name (str): name of the project, will be used as the main
-                             heading in the README file
-            author (str): name of the author, will be added at the bottom of
-                          the README file.
 
         Raises:
             FileNotFoundError: if the path provided does not exists.
@@ -201,6 +195,57 @@ class ProjectBuilder:
         with path.open('w') as readme:
             readme.write(text_to_write)
 
+    def create_todo(self):
+        """The function creates a Todo.md file at the path specified.
+
+        Returns:
+            pathlib.Posix object: This is the path to the Todo.md file
+                                  created.
+
+        Raises:
+            FileNotFoundError: if the no project directory is exists.
+        """
+        if self.proj_dir is None or not self.proj_dir.exists():
+            raise FileNotFoundError('Please create a project directory before'
+                                    'creating a TODO.md file.')
+
+        readme = self.proj_dir / 'TODO.md'
+        readme.touch()
+        print(f'Created TODO.md: {readme}')
+        
+        self.__add_to_todo()
+        print('Text added to TODO.md')
+        
+        return readme
+
+    def __add_to_todo(self):
+         """The function adds text to a Todo.md file.
+
+        Raises:
+            FileNotFoundError: if the path provided does not exists.
+        """
+        if not self.path.exists():
+            raise FileNotFoundError('You need to create a project '
+                                    'directory and TODO.md file.')
+        elif self.proj_dir is None or not self.proj_dir.exists():
+            raise FileNotFoundError('You need to create a README.md file.')
+
+        path_temp = Path.cwd() / 'templates' / 'TODO.md.template'
+
+        if not path_temp.exists():
+            raise FileNotFoundError('No TODO.md file template was found in '
+                                    'the current directory.')
+
+        readme_temp_str = path_temp.open('r').read()
+        readme_template = Template(readme_temp_str)
+
+        template_dict = {'project_name': self.proj_name}
+        text_to_write = readme_template.render(template_dict)
+
+        path = self.proj_dir / 'TODO.md'
+        with path.open('w') as todo:
+            readme.write(text_to_write)
+
     def __delete_all__(self):
         rmtree(self.path)
 
@@ -209,4 +254,3 @@ if __name__ == '__main__':
     pb = ProjectBuilder()
     pb.create_dir()
     pb.create_readme()
-    pb.add_to_readme()
