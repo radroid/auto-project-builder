@@ -131,3 +131,4 @@ dmypy.json
 # Manually added
 project-builder-venv/
 .vscode/settings.json
+.DS_Store

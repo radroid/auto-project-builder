@@ -159,21 +159,15 @@ class ProjectBuilder:
 
         readme = self.proj_dir / 'README.md'
         readme.touch()
-
-        with readme.open('w') as write:
-            write.write('Hello World!\n')
-
         print(f'Created README.md: {readme}')
+
+        self.__add_to_readme()
+        print('Text added to README.md')
+
         return readme
 
-    def add_to_readme(self):
+    def __add_to_readme(self):
         """The function adds text to a README.md file.
-
-        Notes:
-            proj_name (str): name of the project, will be used as the main
-                             heading in the README file
-            author (str): name of the author, will be added at the bottom of
-                          the README file.
 
         Raises:
             FileNotFoundError: if the path provided does not exists.
@@ -184,7 +178,7 @@ class ProjectBuilder:
         elif self.proj_dir is None or not self.proj_dir.exists():
             raise FileNotFoundError('You need to create a README.md file.')
 
-        path_temp = Path.cwd() / 'README.md.template'
+        path_temp = Path.cwd() / 'templates' / 'README.md.template'
 
         if not path_temp.exists():
             raise FileNotFoundError('No README.md file template was found in '
@@ -201,6 +195,109 @@ class ProjectBuilder:
         with path.open('w') as readme:
             readme.write(text_to_write)
 
+    def create_todo(self):
+        """The function creates a Todo.md file at the path specified.
+
+        Returns:
+            pathlib.Posix object: This is the path to the Todo.md file
+                                  created.
+
+        Raises:
+            FileNotFoundError: if the no project directory is exists.
+        """
+        if self.proj_dir is None or not self.proj_dir.exists():
+            raise FileNotFoundError('Please create a project directory before'
+                                    'creating a TODO.md file.')
+
+        todo = self.proj_dir / 'TODO.md'
+        todo.touch()
+        print(f'Created TODO.md: {todo}')
+
+        self.__add_to_todo()
+        print('Text added to TODO.md')
+
+        return todo
+
+    def __add_to_todo(self):
+        """The function adds text to a Todo.md file.
+
+        Raises:
+            FileNotFoundError: if the path provided does not exists.
+        """
+        if not self.path.exists():
+            raise FileNotFoundError('You need to create a project '
+                                    'directory and TODO.md file.')
+        elif self.proj_dir is None or not self.proj_dir.exists():
+            raise FileNotFoundError('You need to create a TODO.md file.')
+
+        path_temp = Path.cwd() / 'templates' / 'TODO.md.template'
+
+        if not path_temp.exists():
+            raise FileNotFoundError('No TODO.md file template was found in '
+                                    'the current directory.')
+
+        todo_temp_str = path_temp.open('r').read()
+        todo_template = Template(todo_temp_str)
+
+        template_dict = {'project_name': self.proj_name}
+        text_to_write = todo_template.render(template_dict)
+
+        path = self.proj_dir / 'TODO.md'
+        with path.open('w') as todo:
+            todo.write(text_to_write)
+
+    def create_main(self):
+        """The function creates a {{proj_name}}.py file at the path specified.
+
+        Returns:
+            pathlib.Posix object: This is the path to the {{proj_name}}.py file
+                                  created.
+
+        Raises:
+            FileNotFoundError: if the no project directory is exists.
+        """
+        if self.proj_dir is None or not self.proj_dir.exists():
+            raise FileNotFoundError(f'Please create a project directory before'
+                                    f'creating a {self.proj_name} file.')
+
+        main = self.proj_dir / f'{self.proj_name}.py'
+        main.touch()
+        print(f'Created {self.proj_name}: {main}')
+
+        self.__add_to_todo()
+        print('Text added to TODO.md')
+
+        return main
+
+    def __add_to_main(self):
+        """The function adds text to a {{proj_name}}.py file.
+
+        Raises:
+            FileNotFoundError: if the path provided does not exists.
+        """
+        if not self.path.exists():
+            raise FileNotFoundError(f'You need to create a project '
+                                    f'directory and {self.proj_name}.py file.')
+        elif self.proj_dir is None or not self.proj_dir.exists():
+            raise FileNotFoundError(f'You need to create a {self.proj_name}.py'
+                                    ' file.')
+
+        path_temp = Path.cwd() / 'templates' / 'main.py.template'
+
+        if not path_temp.exists():
+            raise FileNotFoundError('No main.py file template was'
+                                    ' found in the current directory.')
+
+        main_temp_str = path_temp.open('r').read()
+        main_template = Template(main_temp_str)
+
+        template_dict = {'project_name': self.proj_name}
+        text_to_write = main_template.render(template_dict)
+
+        path = self.proj_dir / f'{self.proj_name}.py'
+        with path.open('w') as main:
+            main.write(text_to_write)
+
     def __delete_all__(self):
         rmtree(self.path)
 
@@ -209,4 +306,5 @@ if __name__ == '__main__':
     pb = ProjectBuilder()
     pb.create_dir()
     pb.create_readme()
-    pb.add_to_readme()
+    pb.create_todo
+    pb.create_main

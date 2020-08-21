@@ -94,21 +94,12 @@ def test_create_readme_creation_error(pb):
         pb.create_readme()
 
 
-def test_create_readme_text(pb):
-    pb.create_dir()
-    readme = pb.create_readme()
-    with readme.open('r') as read:
-        text = read.read()
-    assert text == 'Hello World!\n'
-
-
 # Test Milestone 3b. Add text to Readme.md
 def test_add_to_readme(pb):
     proj_name = 'test'
     author = 'Raj Dholakia'
     pb.create_dir()
     readme = pb.create_readme()
-    pb.add_to_readme()
 
     text_to_write = f'# {proj_name}\nWelcome to {proj_name}!\n\n\n' \
                     f'Created by {author}.'
@@ -117,3 +108,26 @@ def test_add_to_readme(pb):
         text_written = read.read()
 
     assert text_to_write == text_written
+
+
+# Test Milestone 5. Create other files using Templates.
+def test_create_todo_creation(pb):
+    pb.create_dir()
+    todo = pb.create_todo()
+    assert todo.exists()
+
+
+def test_create_todo_creation_error(pb):
+    with pytest.raises(FileNotFoundError):
+        pb.create_todo()
+
+
+def test_create_main_creation(pb):
+    pb.create_dir()
+    main = pb.create_main()
+    assert main.exists()
+
+
+def test_create_main_creation_error(pb):
+    with pytest.raises(FileNotFoundError):
+        pb.create_main()
