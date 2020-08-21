@@ -69,10 +69,10 @@ pb = create_simple_project()
 print(f'Path to the folder containing the project folder: {pb.path}')
 print(f'Path to the project folder: {pb.proj_path}')
 ```
-> You can 
-- modify the templates to suit your style.
-- go through the ProjectBuilder class to add your own functionality.
-- collaborate with me to improve the project. :smiley:
+Possible improvements/personalisations you can make:
+ - modify the templates to suit your style.
+ - go through the ProjectBuilder class to add your own functionality.
+ - collaborate with me to improve the project. :smiley:
 
 ## Contributing
 There are **Two ways** to do this:
@@ -91,7 +91,8 @@ I would appreciate comments on anything and everything, but here are some to get
 - **Testing**: this one can be get time consuming compared to the others.
 
 You can refer to [this guide](https://www.kevinlondon.com/2015/05/05/code-review-best-practices.html) for advice on Code Reviews.
-* I will be creating a `Contributions through Code Reviews` section.
+
+\*I will be creating a `Contributions through Code Reviews` section.
 
 ## Support
 I am looking for a job ooportunity in Canada. It would mean a lot if we could connect and discuss what we can do for each other.
