@@ -5,6 +5,20 @@ The aim is to automate the repetitive task of creating directories and files for
 [![Powered by](https://forthebadge.com/images/badges/powered-by-responsibility.svg)](https://forthebadge.com) 
 [![for real](https://forthebadge.com/images/badges/fo-real.svg)](https://forthebadge.com)
 
+Function:
+```python 
+create_simple_project()
+```
+Project created by the above function:
+``` 
+projectname/
+│
+├── project_name.py
+├── LICENSE
+├── TODO.md
+└── README.md
+```
+
 ## Usage for Mac/Linux Users
 
 **Prerequisites:**
