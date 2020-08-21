@@ -108,3 +108,26 @@ def test_add_to_readme(pb):
         text_written = read.read()
 
     assert text_to_write == text_written
+
+
+# Test Milestone 5. Create other files using Templates.
+def test_create_todo_creation(pb):
+    pb.create_dir()
+    todo = pb.create_todo()
+    assert todo.exists()
+
+
+def test_create_todo_creation_error(pb):
+    with pytest.raises(FileNotFoundError):
+        pb.create_todo()
+
+
+def test_create_main_creation(pb):
+    pb.create_dir()
+    main = pb.create_main()
+    assert main.exists()
+
+
+def test_create_main_creation_error(pb):
+    with pytest.raises(FileNotFoundError):
+        pb.create_main()
