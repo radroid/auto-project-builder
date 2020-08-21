@@ -81,6 +81,7 @@ There are **Two ways** to do this:
 
 ### Code Review
 > I will be mentioning your name in the `Contribution` section* for helpful and constructive feedback.
+
 I would really appreciate any kind of feedback on the way I have chosen to tackle this problem. Keep in mind, I am a beginner and even a small piece of advice can go a long way. **Be as critical as you can!** Thank you for spending time to look at my code.
 
 The best way to start is by going through the example codes in `hangman/examples`.
