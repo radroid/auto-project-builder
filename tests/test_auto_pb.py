@@ -3,7 +3,9 @@
 # import pytest
 from tests.tud_test_base import set_keyboard_input
 from auto_pb import ProjectBuilder
+from auto_pb import create_simple_project
 from pathlib import Path
+from shutil import rmtree
 import pytest
 
 
@@ -15,6 +17,16 @@ def pb():
     yield pb
     if pb.proj_dir is not None and pb.proj_dir.exists():
         pb.__delete_all__
+
+
+@pytest.fixture(scope="module")
+def sim_proj():
+    """Uses the simple_project() method from the auto_pb module. and returns a
+    ProjectBuilder instance."""
+    set_keyboard_input(['test', 'Raj Dholakia'])
+    sim_proj = create_simple_project()
+    yield sim_proj
+    rmtree(sim_proj.proj_dir)
 
 
 # Test Milestone 1. First User Input
@@ -131,3 +143,23 @@ def test_create_main_creation(pb):
 def test_create_main_creation_error(pb):
     with pytest.raises(FileNotFoundError):
         pb.create_main()
+
+
+# Test Milestone 6. Create a function to make code resuable.
+def test_sim_proj_dir_exists(sim_proj):
+    assert sim_proj.proj_dir.exists()
+
+
+def test_sim_proj_readme_exists(sim_proj):
+    path = sim_proj.proj_dir / 'README.md'
+    assert path.exists()
+
+
+def test_sim_proj_todo_exists(sim_proj):
+    path = sim_proj.proj_dir / 'TODO.md'
+    assert path.exists()
+
+
+def test_sim_proj_main_exists(sim_proj):
+    path = sim_proj.proj_dir / 'test.py'
+    assert path.exists()
