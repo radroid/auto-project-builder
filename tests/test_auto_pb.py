@@ -161,5 +161,5 @@ def test_sim_proj_todo_exists(sim_proj):
 
 
 def test_sim_proj_main_exists(sim_proj):
-    path = sim_proj.proj_dir / f'{sim_proj.proj_name}.py'
+    path = sim_proj.proj_dir / 'test.py'
     assert path.exists()
