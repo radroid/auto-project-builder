@@ -299,7 +299,23 @@ class ProjectBuilder:
             main.write(text_to_write)
 
     def __delete_all__(self):
-        rmtree(self.path)
+        rmtree(self.proj_dir)
+
+
+def create_simple_project():
+    """Creates a simple project using the ProjectBuilder class.
+
+    Returns:
+        ProjectBuilder object: an instantiated ProjectBuilder class object
+                               whose attributes can be used to locate the
+                               project directory.
+    """
+    pb = ProjectBuilder()
+    pb.create_dir()
+    pb.create_readme()
+    pb.create_todo()
+    pb.create_main()
+    return pb
 
 
 if __name__ == '__main__':
