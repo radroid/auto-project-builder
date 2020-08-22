@@ -247,6 +247,13 @@ class ProjectBuilder:
 def create_simple_project():
     """Creates a simple project using the ProjectBuilder class.
 
+    Notes:
+        Creates the following files:
+        - README.md
+        - todo.md
+        - LICENSE
+        - {{ project_name }}.py
+
     Returns:
         ProjectBuilder object: an instantiated ProjectBuilder class object
                                whose attributes can be used to locate the
@@ -256,7 +263,8 @@ def create_simple_project():
     pb.create_dir()
 
     files = ['README.md',
-             'TODO.md']
+             'TODO.md',
+             'LICENSE']
 
     for filename in files:
         pb.create_file(filename=filename, template=True)
