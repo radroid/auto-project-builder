@@ -97,7 +97,7 @@ def test_create_dir_creation_2(pb):
 # Test Milestone 3a. Create Readme.md
 def test_create_readme_creation(pb):
     pb.create_dir()
-    readme = pb.create_readme()
+    readme = pb.create_file('README.md')
     assert readme.exists()
 
 
@@ -111,7 +111,7 @@ def test_add_to_readme(pb):
     proj_name = 'test'
     author = 'Raj Dholakia'
     pb.create_dir()
-    readme = pb.create_readme()
+    readme = pb.create_file('README.md', template=True)
 
     text_to_write = f'# {proj_name}\nWelcome to {proj_name}!\n\n\n' \
                     f'Created by {author}.'
@@ -125,7 +125,7 @@ def test_add_to_readme(pb):
 # Test Milestone 5. Create other files using Templates.
 def test_create_todo_creation(pb):
     pb.create_dir()
-    todo = pb.create_todo()
+    todo = pb.create_file('TODO.md')
     assert todo.exists()
 
 
@@ -134,15 +134,31 @@ def test_create_todo_creation_error(pb):
         pb.create_todo()
 
 
-def test_create_main_creation(pb):
+def test_create_main_creation_1(pb):
     pb.create_dir()
-    main = pb.create_main()
+    filename = f'{pb.proj_name.replace("-","_")}.py'
+    main = pb.create_file(f'{filename}')
     assert main.exists()
 
 
-def test_create_main_creation_error(pb):
+def test_create_main_creation_2(pb):
+    pb.create_dir()
+    filename = f'{pb.proj_name.replace("-","_")}.py'
+    main = pb.create_file(f'{filename}', template=True,
+                          temp_name='main.py.template')
+    assert main.exists()
+
+
+def test_create_main_creation_error_1(pb):
     with pytest.raises(FileNotFoundError):
         pb.create_main()
+
+
+def test_create_main_creation_error_2(pb):
+    pb.create_dir()
+    filename = f'{pb.proj_name.replace("-","_")}.py'
+    with pytest.raises(FileNotFoundError):
+        pb.create_file(f'{filename}', template=True)
 
 
 # Test Milestone 6. Create a function to make code resuable.
