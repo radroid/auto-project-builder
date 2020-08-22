@@ -251,7 +251,7 @@ def create_simple_project():
         Creates the following files:
         - README.md
         - todo.md
-        - LICENSE
+        - LICENSE: MIT License
         - {{ project_name }}.py
 
     Returns:
