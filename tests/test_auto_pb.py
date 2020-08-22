@@ -103,7 +103,7 @@ def test_create_readme_creation(pb):
 
 def test_create_readme_creation_error(pb):
     with pytest.raises(FileNotFoundError):
-        pb.create_readme()
+        pb.create_file('README.md')
 
 
 # Test Milestone 3b. Add text to Readme.md
@@ -131,7 +131,7 @@ def test_create_todo_creation(pb):
 
 def test_create_todo_creation_error(pb):
     with pytest.raises(FileNotFoundError):
-        pb.create_todo()
+        pb.create_file('TODO.md')
 
 
 def test_create_main_creation_1(pb):
@@ -151,7 +151,7 @@ def test_create_main_creation_2(pb):
 
 def test_create_main_creation_error_1(pb):
     with pytest.raises(FileNotFoundError):
-        pb.create_main()
+        pb.create_file('main.py')
 
 
 def test_create_main_creation_error_2(pb):
