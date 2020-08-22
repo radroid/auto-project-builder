@@ -16,7 +16,7 @@ def pb():
     pb = ProjectBuilder()
     yield pb
     if pb.proj_dir is not None and pb.proj_dir.exists():
-        pb.__delete_all__
+        rmtree(pb.proj_dir)
 
 
 @pytest.fixture(scope="module")

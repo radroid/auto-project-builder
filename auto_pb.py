@@ -9,7 +9,6 @@ Update: The refactored code makes use of a class to modularise project
 import pathlib
 from pathlib import Path
 import re
-from shutil import rmtree
 from jinja2 import Template
 
 
@@ -151,7 +150,7 @@ class ProjectBuilder:
                                   created.
 
         Raises:
-            FileNotFoundError: if the no project directory is exists.
+            FileNotFoundError: if no project directory exists.
         """
         if self.proj_dir is None or not self.proj_dir.exists():
             raise FileNotFoundError('Please create a project directory before'
@@ -203,19 +202,13 @@ class ProjectBuilder:
                                   created.
 
         Raises:
-            FileNotFoundError: if the no project directory is exists.
+            FileNotFoundError: if no project directory exists.
         """
         if self.proj_dir is None or not self.proj_dir.exists():
             raise FileNotFoundError('Please create a project directory before'
                                     'creating a TODO.md file.')
 
-        todo = self.proj_dir / 'TODO.md'
-        todo.touch()
-        print(f'Created TODO.md: {todo}')
-
-        self.__add_to_todo()
-        print('Text added to TODO.md')
-
+        todo = self.create_file('TODO.md', template=True)
         return todo
 
     def __add_to_todo(self):
@@ -254,7 +247,7 @@ class ProjectBuilder:
                                   created.
 
         Raises:
-            FileNotFoundError: if the no project directory is exists.
+            FileNotFoundError: if no project directory exists.
         """
         if self.proj_dir is None or not self.proj_dir.exists():
             raise FileNotFoundError(f'Please create a project directory before'
@@ -298,8 +291,106 @@ class ProjectBuilder:
         with path.open('w') as main:
             main.write(text_to_write)
 
-    def __delete_all__(self):
-        rmtree(self.proj_dir)
+    def create_file(self, filename: str, template: bool = False,
+                    temp_dict: dict = {}, temp_name: str = None,
+                    path: str or pathlib.PosixPath = None):
+        """Creates a file at a given path and a given name.
+
+        Args:
+            filename (str): name of the file to created.
+            template (bool, optional): True if there if the file needs to
+                                       contain data contained in its template.
+                                       Defaults to False.
+            temp_dict (dict, optional): used to customise parts of the template
+                                        The variable names matching a key in
+                                        the dict will be replaced with the
+                                        respective value. Defaults to {}.
+            temp_name (str, optional): name of the template file in the
+                                       templates directory. Defaults to None.
+            path (pathlib.PosixPath or str, optional): path or directory name
+                                                       inside the project
+                                                       directory where the
+                                                       file needs to be
+                                                       created.
+                                                       Defaults to None.
+
+        Raises:
+            FileNotFoundError: if no project directory exists.
+            FileNotFoundError: if the path input does not exist.
+
+        Returns:
+            pathlib.PosixPath: path to the file created.
+        """
+        if self.proj_dir is None or not self.proj_dir.exists():
+            raise FileNotFoundError(f'Please create a project directory before'
+                                    f'creating a {filename} file.')
+
+        if path is None:
+            path = self.proj_dir
+
+        if type(path) == str:
+            path = self.proj_dir / path
+
+        if not path.exists() or not path.is_dir():
+            raise FileNotFoundError(f'No directory exists at {path}')
+
+        file_path = path / filename
+        file_path.touch()
+        print(f'Created {filename}: {file_path}')
+
+        if len(temp_dict) == 0:
+            temp_dict = {'project_name': self.proj_name,
+                         'author_name': self.author}
+
+        if template:
+            self.__add_to_file(path=file_path, template_dict=temp_dict,
+                               name=temp_name)
+            print(f'Text added to {filename}')
+
+        return file_path
+
+    def __add_to_file(self, path: pathlib.PosixPath, template_dict: dict,
+                      name: str):
+        """Add to a file from a template stored in the templates directory.
+
+        Args:
+            path (pathlib.PosixPath): path to the file that needs to be
+                                      updated.
+            template_dict (dict): used to customise parts of the template.
+                                  The variable names matching a key in the
+                                  dict will be replaced with the respective
+                                  value.
+            name (str): name of the template file in the templates
+                        directory. Defaults to None.
+
+        Raises:
+            FileNotFoundError: if the path input does not exist.
+            FileNotFoundError: if the project directory does not exist.
+            FileNotFoundError: if the template file does not exist.
+        """
+        if not path.exists():
+            raise FileNotFoundError(f'You need to create a project '
+                                    f'directory and {self.proj_name}.py file.')
+        elif self.proj_dir is None or not self.proj_dir.exists():
+            raise FileNotFoundError(f'You need to create a {self.proj_name}.py'
+                                    ' file.')
+
+        if name is None:
+            name = path.name + '.template'
+
+        path_temp = Path.cwd() / 'templates' / name
+
+        if not path_temp.exists():
+            raise FileNotFoundError('No main.py file template was'
+                                    ' found in the current directory.')
+
+        template_str = path_temp.open('r').read()
+        template = Template(template_str)
+
+        write_to_file = template.render(template_dict)
+
+        with path.open('w') as main:
+            main.write(write_to_file)
 
 
 def create_simple_project():
@@ -312,9 +403,16 @@ def create_simple_project():
     """
     pb = ProjectBuilder()
     pb.create_dir()
-    pb.create_readme()
-    pb.create_todo()
-    pb.create_main()
+
+    files = ['README.md',
+             'TODO.md']
+
+    for filename in files:
+        pb.create_file(filename=filename, template=True)
+
+    pb.create_file(filename=f'{pb.proj_name}.py', template=True,
+                   temp_name='main.py.template')
+
     return pb
 
 
