@@ -9,7 +9,6 @@ Update: The refactored code makes use of a class to modularise project
 import pathlib
 from pathlib import Path
 import re
-from shutil import rmtree
 from jinja2 import Template
 
 
@@ -143,163 +142,106 @@ class ProjectBuilder:
         print(f'Created directory: {new_dir}')
         return new_dir
 
-    def create_readme(self):
-        """The function creates a README.md file at the path specified.
+    def create_file(self, filename: str, template: bool = False,
+                    temp_dict: dict = {}, temp_name: str = None,
+                    path: str or pathlib.PosixPath = None):
+        """Creates a file at a given path and a given name.
+
+        Args:
+            filename (str): name of the file to created.
+            template (bool, optional): True if there if the file needs to
+                                       contain data contained in its template.
+                                       Defaults to False.
+            temp_dict (dict, optional): used to customise parts of the template
+                                        The variable names matching a key in
+                                        the dict will be replaced with the
+                                        respective value. Defaults to {}.
+            temp_name (str, optional): name of the template file in the
+                                       templates directory. Defaults to None.
+            path (pathlib.PosixPath or str, optional): path or directory name
+                                                       inside the project
+                                                       directory where the
+                                                       file needs to be
+                                                       created.
+                                                       Defaults to None.
+
+        Raises:
+            FileNotFoundError: if no project directory exists.
+            FileNotFoundError: if the path input does not exist.
 
         Returns:
-            pathlib.Posix object: This is the path to the README.md file
-                                  created.
-
-        Raises:
-            FileNotFoundError: if the no project directory is exists.
-        """
-        if self.proj_dir is None or not self.proj_dir.exists():
-            raise FileNotFoundError('Please create a project directory before'
-                                    'creating a README.md file.')
-
-        readme = self.proj_dir / 'README.md'
-        readme.touch()
-        print(f'Created README.md: {readme}')
-
-        self.__add_to_readme()
-        print('Text added to README.md')
-
-        return readme
-
-    def __add_to_readme(self):
-        """The function adds text to a README.md file.
-
-        Raises:
-            FileNotFoundError: if the path provided does not exists.
-        """
-        if not self.path.exists():
-            raise FileNotFoundError('You need to create a project '
-                                    'directory and README.md file.')
-        elif self.proj_dir is None or not self.proj_dir.exists():
-            raise FileNotFoundError('You need to create a README.md file.')
-
-        path_temp = Path.cwd() / 'templates' / 'README.md.template'
-
-        if not path_temp.exists():
-            raise FileNotFoundError('No README.md file template was found in '
-                                    'the current directory.')
-
-        readme_temp_str = path_temp.open('r').read()
-        readme_template = Template(readme_temp_str)
-
-        template_dict = {'project_name': self.proj_name,
-                         'author_name': self.author}
-        text_to_write = readme_template.render(template_dict)
-
-        path = self.proj_dir / 'README.md'
-        with path.open('w') as readme:
-            readme.write(text_to_write)
-
-    def create_todo(self):
-        """The function creates a Todo.md file at the path specified.
-
-        Returns:
-            pathlib.Posix object: This is the path to the Todo.md file
-                                  created.
-
-        Raises:
-            FileNotFoundError: if the no project directory is exists.
-        """
-        if self.proj_dir is None or not self.proj_dir.exists():
-            raise FileNotFoundError('Please create a project directory before'
-                                    'creating a TODO.md file.')
-
-        todo = self.proj_dir / 'TODO.md'
-        todo.touch()
-        print(f'Created TODO.md: {todo}')
-
-        self.__add_to_todo()
-        print('Text added to TODO.md')
-
-        return todo
-
-    def __add_to_todo(self):
-        """The function adds text to a Todo.md file.
-
-        Raises:
-            FileNotFoundError: if the path provided does not exists.
-        """
-        if not self.path.exists():
-            raise FileNotFoundError('You need to create a project '
-                                    'directory and TODO.md file.')
-        elif self.proj_dir is None or not self.proj_dir.exists():
-            raise FileNotFoundError('You need to create a TODO.md file.')
-
-        path_temp = Path.cwd() / 'templates' / 'TODO.md.template'
-
-        if not path_temp.exists():
-            raise FileNotFoundError('No TODO.md file template was found in '
-                                    'the current directory.')
-
-        todo_temp_str = path_temp.open('r').read()
-        todo_template = Template(todo_temp_str)
-
-        template_dict = {'project_name': self.proj_name}
-        text_to_write = todo_template.render(template_dict)
-
-        path = self.proj_dir / 'TODO.md'
-        with path.open('w') as todo:
-            todo.write(text_to_write)
-
-    def create_main(self):
-        """The function creates a {{proj_name}}.py file at the path specified.
-
-        Returns:
-            pathlib.Posix object: This is the path to the {{proj_name}}.py file
-                                  created.
-
-        Raises:
-            FileNotFoundError: if the no project directory is exists.
+            pathlib.PosixPath: path to the file created.
         """
         if self.proj_dir is None or not self.proj_dir.exists():
             raise FileNotFoundError(f'Please create a project directory before'
-                                    f'creating a {self.proj_name} file.')
+                                    f'creating a {filename} file.')
 
-        main = self.proj_dir / f'{self.proj_name}.py'
-        main.touch()
-        print(f'Created {self.proj_name}: {main}')
+        if path is None:
+            path = self.proj_dir
 
-        self.__add_to_todo()
-        print('Text added to TODO.md')
+        if type(path) == str:
+            path = self.proj_dir / path
 
-        return main
+        if not path.exists() or not path.is_dir():
+            raise FileNotFoundError(f'No directory exists at {path}')
 
-    def __add_to_main(self):
-        """The function adds text to a {{proj_name}}.py file.
+        file_path = path / filename
+        file_path.touch()
+        print(f'Created {filename}: {file_path}')
+
+        if len(temp_dict) == 0:
+            temp_dict = {'project_name': self.proj_name,
+                         'author_name': self.author}
+
+        if template:
+            self.__add_to_file(path=file_path, template_dict=temp_dict,
+                               name=temp_name)
+            print(f'Text added to {filename}')
+
+        return file_path
+
+    def __add_to_file(self, path: pathlib.PosixPath, template_dict: dict,
+                      name: str):
+        """Add to a file from a template stored in the templates directory.
+
+        Args:
+            path (pathlib.PosixPath): path to the file that needs to be
+                                      updated.
+            template_dict (dict): used to customise parts of the template.
+                                  The variable names matching a key in the
+                                  dict will be replaced with the respective
+                                  value.
+            name (str): name of the template file in the templates
+                        directory. Defaults to None.
 
         Raises:
-            FileNotFoundError: if the path provided does not exists.
+            FileNotFoundError: if the path input does not exist.
+            FileNotFoundError: if the project directory does not exist.
+            FileNotFoundError: if the template file does not exist.
         """
-        if not self.path.exists():
+        if not path.exists():
             raise FileNotFoundError(f'You need to create a project '
                                     f'directory and {self.proj_name}.py file.')
         elif self.proj_dir is None or not self.proj_dir.exists():
             raise FileNotFoundError(f'You need to create a {self.proj_name}.py'
                                     ' file.')
 
-        path_temp = Path.cwd() / 'templates' / 'main.py.template'
+        if name is None:
+            name = path.name + '.template'
+
+        path_temp = Path.cwd() / 'templates' / name
 
         if not path_temp.exists():
             raise FileNotFoundError('No main.py file template was'
                                     ' found in the current directory.')
 
-        main_temp_str = path_temp.open('r').read()
-        main_template = Template(main_temp_str)
+        template_str = path_temp.open('r').read()
+        template = Template(template_str)
 
-        template_dict = {'project_name': self.proj_name}
-        text_to_write = main_template.render(template_dict)
+        write_to_file = template.render(template_dict)
 
-        path = self.proj_dir / f'{self.proj_name}.py'
         with path.open('w') as main:
-            main.write(text_to_write)
-
-    def __delete_all__(self):
-        rmtree(self.proj_dir)
+            main.write(write_to_file)
 
 
 def create_simple_project():
@@ -312,9 +254,16 @@ def create_simple_project():
     """
     pb = ProjectBuilder()
     pb.create_dir()
-    pb.create_readme()
-    pb.create_todo()
-    pb.create_main()
+
+    files = ['README.md',
+             'TODO.md']
+
+    for filename in files:
+        pb.create_file(filename=filename, template=True)
+
+    pb.create_file(filename=f'{pb.proj_name}.py', template=True,
+                   temp_name='main.py.template')
+
     return pb
 
 
