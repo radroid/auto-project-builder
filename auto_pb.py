@@ -264,7 +264,10 @@ def create_simple_project():
 
     files = ['README.md',
              'TODO.md',
-             'LICENSE']
+             'LICENSE',
+             'test_project.py',
+             'setup.py',
+             '.gitignore']
 
     for filename in files:
         pb.create_file(filename=filename, template=True)
