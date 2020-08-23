@@ -197,6 +197,7 @@ class ProjectBuilder:
             self.__add_to_file(path=file_path, template_dict=temp_dict,
                                name=temp_name)
             print(f'Text added to {filename}')
+        print('')
 
         return file_path
 
@@ -249,10 +250,13 @@ def create_simple_project():
 
     Notes:
         Creates the following files:
+        - {{ project_name }}.py
         - README.md
         - todo.md
-        - LICENSE: MIT License
-        - {{ project_name }}.py
+        - LICENSE: MIT License.
+        - test_project.py: pytest
+        - setup.py
+        - .gitignore: basic python gitignore.
 
     Returns:
         ProjectBuilder object: an instantiated ProjectBuilder class object
@@ -264,20 +268,20 @@ def create_simple_project():
 
     files = ['README.md',
              'TODO.md',
-             'LICENSE']
+             'LICENSE',
+             'test_project.py',
+             'setup.py',
+             '.gitignore']
 
     for filename in files:
         pb.create_file(filename=filename, template=True)
 
-    pb.create_file(filename=f'{pb.proj_name}.py', template=True,
+    filename = f'{pb.proj_name.replace("-","_").lower()}.py'
+    pb.create_file(filename=filename, template=True,
                    temp_name='main.py.template')
 
     return pb
 
 
 if __name__ == '__main__':
-    pb = ProjectBuilder()
-    pb.create_dir()
-    pb.create_readme()
-    pb.create_todo
-    pb.create_main
+    create_simple_project()
