@@ -249,10 +249,13 @@ def create_simple_project():
 
     Notes:
         Creates the following files:
+        - {{ project_name }}.py
         - README.md
         - todo.md
         - LICENSE: MIT License
-        - {{ project_name }}.py
+        - test_project.py
+        - setup.py
+        - .gitignore
 
     Returns:
         ProjectBuilder object: an instantiated ProjectBuilder class object

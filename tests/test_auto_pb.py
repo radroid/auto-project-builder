@@ -181,6 +181,7 @@ def test_sim_proj_main_exists(sim_proj):
     assert path.exists()
 
 
+# Test Milstone 9. Create more files.
 def test_sim_proj_license_exists(sim_proj):
     path = sim_proj.proj_dir / 'LICENSE'
     assert path.exists()
