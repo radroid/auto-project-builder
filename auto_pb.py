@@ -197,6 +197,7 @@ class ProjectBuilder:
             self.__add_to_file(path=file_path, template_dict=temp_dict,
                                name=temp_name)
             print(f'Text added to {filename}')
+        print()
 
         return file_path
 
@@ -275,15 +276,12 @@ def create_simple_project():
     for filename in files:
         pb.create_file(filename=filename, template=True)
 
-    pb.create_file(filename=f'{pb.proj_name}.py', template=True,
+    filename = f'{pb.proj_name.replace("-","_").lower()}.py'
+    pb.create_file(filename=filename, template=True,
                    temp_name='main.py.template')
 
     return pb
 
 
 if __name__ == '__main__':
-    pb = ProjectBuilder()
-    pb.create_dir()
-    pb.create_readme()
-    pb.create_todo
-    pb.create_main
+    create_simple_project()

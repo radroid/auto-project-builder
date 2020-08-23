@@ -7,9 +7,9 @@ import {{ project_name.replace('-', '_') }}
 @pytest.fixture(scope='module')
 def instance():
     # Create an object instance.
-    return False # 'yield' or 'return' object.
+    return False  # 'yield' or 'return' object.
     # if 'yield', do post completion clean-up.
-    
+
 
 def test_(instance):
     assert not instance  # Simple assert test
@@ -18,3 +18,4 @@ def test_(instance):
 def test_error_1():
     with pytest.raises(UserWarning):
         raise UserWarning  # Error raised test
+{# space for a new line #}

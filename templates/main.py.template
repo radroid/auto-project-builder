@@ -1,2 +1,3 @@
 if __name__ == '__main__':
     print('Welcome to {{ project_name }}')
+{# space for a new line #}

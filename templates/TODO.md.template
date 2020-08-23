@@ -1,5 +1,5 @@
 # TODO for {{ project_name }}
 
-[ ] Create project structure for {{ project_name }}
-[ ] Add all the information that can be added to README.md
-[ ] Create project milestones on Github or in MILESTONES.md
+- [ ] Create project structure for {{ project_name }}
+- [ ] Add all the information that can be added to README.md
+- [ ] Create project milestones on Github or in MILESTONES.md

@@ -5,9 +5,9 @@ import setuptools
 with open('README.md', 'r') as f:
     long_description = f.read()
 
-setuptools.setup(name={{ project_name }},
+setuptools.setup(name='{{ project_name }}',
                  version='0.1',
-                 author={{ author_name }},
+                 author='{{ author_name }}',
                  license='MIT open-source licence',
                  long_description=long_description,
                  packages=setuptools.find_packages(),
