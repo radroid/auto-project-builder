@@ -197,7 +197,7 @@ class ProjectBuilder:
             self.__add_to_file(path=file_path, template_dict=temp_dict,
                                name=temp_name)
             print(f'Text added to {filename}')
-        print()
+        print('')
 
         return file_path
 
