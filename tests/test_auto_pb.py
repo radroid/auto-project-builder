@@ -85,18 +85,18 @@ def test_instantiating_right_4(pb):
 
 # Test Milestone 2. Create Directory
 def test_create_dir_creation_1(pb):
-    new_dir = pb.create_dir()
+    new_dir = pb.create_proj_dir()
     assert new_dir.exists()
 
 
 def test_create_dir_creation_2(pb):
-    new_dir = pb.create_dir()
+    new_dir = pb.create_proj_dir()
     assert new_dir == Path.cwd().parent / 'test'
 
 
 # Test Milestone 3a. Create Readme.md
 def test_create_readme_creation(pb):
-    pb.create_dir()
+    pb.create_proj_dir()
     readme = pb.create_file('README.md')
     assert readme.exists()
 
@@ -110,7 +110,7 @@ def test_create_readme_creation_error(pb):
 def test_add_to_readme(pb):
     proj_name = 'test'
     author = 'Raj Dholakia'
-    pb.create_dir()
+    pb.create_proj_dir()
     readme = pb.create_file('README.md', template=True)
 
     text_to_write = f'# {proj_name}\nWelcome to {proj_name}!\n\n\n' \
@@ -124,7 +124,7 @@ def test_add_to_readme(pb):
 
 # Test Milestone 5. Create other files using Templates.
 def test_create_todo_creation(pb):
-    pb.create_dir()
+    pb.create_proj_dir()
     todo = pb.create_file('TODO.md')
     assert todo.exists()
 
@@ -135,14 +135,14 @@ def test_create_todo_creation_error(pb):
 
 
 def test_create_main_creation_1(pb):
-    pb.create_dir()
+    pb.create_proj_dir()
     filename = f'{pb.proj_name.replace("-","_")}.py'
     main = pb.create_file(f'{filename}')
     assert main.exists()
 
 
 def test_create_main_creation_2(pb):
-    pb.create_dir()
+    pb.create_proj_dir()
     filename = f'{pb.proj_name.replace("-","_")}.py'
     main = pb.create_file(f'{filename}', template=True,
                           temp_name='main.py.template')
@@ -155,7 +155,7 @@ def test_create_main_creation_error_1(pb):
 
 
 def test_create_main_creation_error_2(pb):
-    pb.create_dir()
+    pb.create_proj_dir()
     filename = f'{pb.proj_name.replace("-","_")}.py'
     with pytest.raises(FileNotFoundError):
         pb.create_file(f'{filename}', template=True)
