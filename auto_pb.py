@@ -150,7 +150,7 @@ class ProjectBuilder:
         """
         if self.proj_dir is None or not self.proj_dir.exists():
             raise FileNotFoundError(f'Please create a project directory before'
-                                    f'creating a {filename} file.')
+                                    f' creating a {filename} file.')
 
         if path is None:
             path = self.proj_dir
@@ -178,6 +178,12 @@ class ProjectBuilder:
             pathlib.Posix object: This is the path to the directory created.
         """
         proj_dir = self.path / self.proj_name
+
+        if proj_dir.exists():
+            self.proj_dir = proj_dir
+            print(f'Directory exists: {proj_dir}')
+            return proj_dir
+
         proj_dir.mkdir(exist_ok=True)
         self.proj_dir = proj_dir
         print(f'Created directory: {proj_dir}')
@@ -338,5 +344,21 @@ def create_simple_project(path: str or pathlib.PosixPath = None):
     return pb
 
 
+def create_jupyter_notebook():
+    """Create a Jupyter notebook instance in the project folder.
+
+    Returns:
+        ProjectBuilder object: an instantiated ProjectBuilder class object
+                               whose attributes can be used to locate the
+                               project directory.
+    """
+    pb = ProjectBuilder()
+    pb.create_proj_dir()
+    pb.create_file(pb.proj_name, template=True,
+                   temp_name='jupyter-notebook.ipynb.template')
+
+    return pb
+
+
 if __name__ == '__main__':
-    create_simple_project()
+    create_jupyter_notebook()
