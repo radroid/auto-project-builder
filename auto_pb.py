@@ -345,6 +345,13 @@ def create_simple_project(path: str or pathlib.PosixPath = None):
 
 
 def create_jupyter_notebook():
+    """Create a Jupyter notebook instance in the project folder.
+
+    Returns:
+        ProjectBuilder object: an instantiated ProjectBuilder class object
+                               whose attributes can be used to locate the
+                               project directory.
+    """
     pb = ProjectBuilder()
     pb.create_proj_dir()
     pb.create_file(pb.proj_name, template=True,
