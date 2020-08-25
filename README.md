@@ -14,9 +14,12 @@ Project created by the above function:
 projectname/
 │
 ├── project_name.py
-├── LICENSE
+├── test_project.py
+├── setup.py
+├── README.md
 ├── TODO.md
-└── README.md
+├── LICENSE
+└── .gitignore
 ```
 
 ## Usage for Mac/Linux Users
