@@ -1,8 +1,8 @@
 """The goal of this module is to automate the process of creating directories
 and files for a new project.
 
-Update: The refactored code makes use of a class to modularise project
-        building.
+Update: The refactored code makes use of a class to modularise project \
+    building.
 """
 
 
@@ -17,9 +17,14 @@ class ProjectBuilder:
 
     Attributes:
         proj_name (str): name of project entered by the user.
+
         author_name (str): name of the author entered by the user.
-        path (pathlib.PosixPath): path to the directory where the project
-                                  directory is to be created.
+
+        path (pathlib.PosixPath):\
+            path to a directory where the project directory is to be created.\
+            Defaults to None. If None, path to the parent directory of this\
+                 project directory will be used.
+
         proj_dir (pathlib.PosixPath): path to the project directory.
     """
 
@@ -27,9 +32,8 @@ class ProjectBuilder:
         """Instantiate an object.
 
         Args:
-            path (str or pathlib.PosixPath, optional): for class attribute
-                                                       'path'. Defaults to
-                                                       None.
+            path (str or pathlib.PosixPath, optional):\
+                For class attribute 'path'.
 
         Raises:
             FileNotFoundError: if the path provided does not exist.
@@ -51,7 +55,7 @@ class ProjectBuilder:
         self.proj_name, self.author = self.get_names()
 
     def get_names(self):
-        """Take input from user for the project name and author name. Print out
+        """Take input from user for the project name and author name. Print out \
         the information provided.
 
         Returns (Tuple):
@@ -135,8 +139,9 @@ class ProjectBuilder:
            possible.
 
         Args:
-            path (strorpathlib.PosixPath): path where the file/directory is to
-                                           be created.
+            path (str or pathlib.PosixPath):\
+                Path where the file/directory is to be created.
+
             filename (str): name of the file/directory to be created.
 
         Raises:
@@ -195,7 +200,7 @@ class ProjectBuilder:
 
         Args:
             dir_name (str): name of the directory to be created.
-            path (pathlib.PosixPath or str, optional):
+            path (pathlib.PosixPath or str, optional):\
                 path or directory name inside the project directory where the \
                 file needs to be created. Defaults to None.
 
@@ -208,27 +213,33 @@ class ProjectBuilder:
         return new_dir
 
     def create_file(self, filename: str, template: bool = False,
-                    temp_dict: dict = {}, temp_name: str = None,
+                    temp_dict: dict = None, temp_name: str = None,
                     path: str or pathlib.PosixPath = None):
         """Creates a file at a given path and a given name.
 
         Args:
             filename (str): name of the file to be created.
-            template (bool, optional): True if there if the file needs to
-                                       contain data contained in its template.
-                                       Defaults to False.
-            temp_dict (dict, optional): used to customise parts of the template
-                                        The variable names matching a key in
-                                        the dict will be replaced with the
-                                        respective value. Defaults to {}.
-            temp_name (str, optional): name of the template file in the
-                                       templates directory. Defaults to None.
-            path (pathlib.PosixPath or str, optional): path or directory name
-                                                       inside the project
-                                                       directory where the
-                                                       file needs to be
-                                                       created.
-                                                       Defaults to None.
+
+            template (bool, optional):\
+                True if there if the file needs to contain data contained in \
+                its template. Defaults to False.
+
+            temp_dict (dict, optional):\
+                used to customise parts of the template. The variable names \
+                matching a key in the dict will be replaced with the \
+                respective value. Defaults to None. If None, the project and \
+                author names are added to the dictionary.
+
+            temp_name (str, optional):\
+                name of the template file in the templates directory.\
+                Defaults to None. Uses the filename argument followed \
+                by '.template' to create a name. A file of this name \
+                is looked for in the templates directory.
+
+            path (pathlib.PosixPath or str, optional):\
+                path or directory name inside the project directory where the \
+                file needs to be created. Defaults to None. If None, the \
+                project directory is used as path.
 
         Returns:
             pathlib.PosixPath: path to the file created.
@@ -237,7 +248,7 @@ class ProjectBuilder:
         file_path.touch()
         print(f'Created {filename}: {file_path}')
 
-        if len(temp_dict) == 0:
+        if temp_dict is None:
             temp_dict = {'project_name': self.proj_name,
                          'author_name': self.author}
 
@@ -254,14 +265,15 @@ class ProjectBuilder:
         """Add to a file from a template stored in the templates directory.
 
         Args:
-            path (pathlib.PosixPath): path to the file that needs to be
-                                      updated.
-            template_dict (dict): used to customise parts of the template.
-                                  The variable names matching a key in the
-                                  dict will be replaced with the respective
-                                  value.
-            template_name (str): template_name of the template file in the
-                                 templates directory. Defaults to None.
+            path (pathlib.PosixPath):\
+                path to the file that needs to be updated.
+            template_dict (dict):\
+                used to customise parts of the template. The variable names \
+                matching a key in the dict will be replaced with the \
+                respective value.
+            template_name (str):\
+                template_name of the template file in the templates directory.\
+                Defaults to None.
 
         Raises:
             TypeError: if the path input is not to a file.
@@ -372,7 +384,7 @@ def create_ml_project(path: str or pathlib.PosixPath = None):
             an instantiated ProjectBuilder class object whose attributes can
              be used to locate the project directory.
     """
-    ml_pb = ProjectBuilder(path=path)
+    ml_pb = ProjectBuilder(path=path,)
     ml_pb.create_proj_dir()
 
     files = ['README.md',
