@@ -181,12 +181,12 @@ class ProjectBuilder:
 
         if proj_dir.exists():
             self.proj_dir = proj_dir
-            print(f'Directory exists: {proj_dir}')
+            print(f'Directory exists: {proj_dir}\n\n')
             return proj_dir
 
         proj_dir.mkdir(exist_ok=True)
         self.proj_dir = proj_dir
-        print(f'Created directory: {proj_dir}')
+        print(f'Created directory: {proj_dir}\n\n')
         return proj_dir
 
     def create_dir(self, dir_name: str, path: str or pathlib.PosixPath = None):
@@ -195,19 +195,16 @@ class ProjectBuilder:
 
         Args:
             dir_name (str): name of the directory to be created.
-            path (pathlib.PosixPath or str, optional): path or directory name
-                                                       inside the project
-                                                       directory where the
-                                                       file needs to be
-                                                       created.
-                                                       Defaults to None.
+            path (pathlib.PosixPath or str, optional):
+                path or directory name inside the project directory where the \
+                file needs to be created. Defaults to None.
 
         Returns:
             pathlib.Posix object: This is the path to the directory created.
         """
         new_dir = self.valid_path(path, dir_name)
         new_dir.mkdir(exist_ok=True)
-        print(f'Created directory: {new_dir}')
+        print(f'Created directory \'{dir_name}\': {new_dir}\n')
         return new_dir
 
     def create_file(self, filename: str, template: bool = False,
@@ -285,7 +282,7 @@ class ProjectBuilder:
         path_temp = Path.cwd() / 'templates' / template_name
 
         if not path_temp.exists():
-            raise FileNotFoundError('No main.py file template was'
+            raise FileNotFoundError(f'No {template_name} file template was'
                                     ' found in the current directory.')
 
         template_str = path_temp.open('r').read()
@@ -301,7 +298,7 @@ def create_simple_project(path: str or pathlib.PosixPath = None):
     """Creates a simple project using the ProjectBuilder class.
 
     Notes:
-        Creates the following files:
+        Creates the following files in the project directory:
         - {{ project_name }}.py: main python script
         - README.md
         - TODO.md
@@ -319,7 +316,7 @@ def create_simple_project(path: str or pathlib.PosixPath = None):
                                whose attributes can be used to locate the
                                project directory.
     """
-    pb = ProjectBuilder()
+    pb = ProjectBuilder(path=path)
     pb.create_proj_dir()
 
     files = ['README.md',
@@ -354,11 +351,81 @@ def create_jupyter_notebook():
     """
     pb = ProjectBuilder()
     pb.create_proj_dir()
-    pb.create_file(pb.proj_name, template=True,
-                   temp_name='jupyter-notebook.ipynb.template')
+    pb.create_file(f'{pb.proj_name}.ipynb', template=True,
+                   temp_name='jupyter.ipynb.template')
 
     return pb
 
 
+def create_ml_project(path: str or pathlib.PosixPath = None):
+    """Creates a basic layout for a machine learning project using
+     ProjectBuilder class.
+
+    Notes:
+        Creates the following file structure:
+
+        project_directory/
+        |
+        ├── data/
+        |
+        ├── tests/
+        |   └── test_project.py: pytest python script
+        |
+        ├── notebooks/
+        |   └── {{ project_name }}.ipynb: main jupyter notebook
+        |
+        ├── README.md
+        ├── TODO.md
+        ├── LICENSE: MIT License.
+        └── .gitignore: basic python gitignore.
+
+    Args:
+        path (str or pathlib.PosixPath, optional):
+            for class attribute 'path'. Defaults to None.
+
+    Returns:
+        ProjectBuilder object:
+            an instantiated ProjectBuilder class object whose attributes can
+             be used to locate the project directory.
+    """
+    ml_pb = ProjectBuilder(path=path)
+    ml_pb.create_proj_dir()
+
+    files = ['README.md',
+             'TODO.md',
+             'LICENSE',
+             '.gitignore']
+
+    for filename in files:
+        ml_pb.create_file(filename=filename, template=True)
+
+    dirs = ['data',
+            'tests',
+            'notebooks']
+
+    for dir_name in dirs:
+        ml_pb.create_dir(dir_name)
+
+    # Create main jupyter notebook.
+    notebook = f'{ml_pb.proj_name.lower()}.ipynb'
+    path = ml_pb.proj_dir / 'notebooks'
+    ml_pb.create_file(filename=notebook, template=True,
+                      temp_name='jupyter.ipynb.template',
+                      path=path)
+
+    # Create test python file
+    name = ml_pb.proj_name.replace('-', '_').lower()
+    test_filename = f'test_{name}.py'
+    path = ml_pb.proj_dir / 'tests'
+
+    ml_pb.create_file(filename=test_filename, template=True,
+                      temp_name='test_project.py.template',
+                      path=path)
+    
+    ml_pb.create_dir()
+
+    return ml_pb
+
+
 if __name__ == '__main__':
-    create_jupyter_notebook()
+    create_ml_project()
