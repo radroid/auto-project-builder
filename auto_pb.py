@@ -341,22 +341,6 @@ def create_simple_project(path: str or pathlib.PosixPath = None):
     return pb
 
 
-def create_jupyter_notebook():
-    """Create a Jupyter notebook instance in the project folder.
-
-    Returns:
-        ProjectBuilder object: an instantiated ProjectBuilder class object
-                               whose attributes can be used to locate the
-                               project directory.
-    """
-    pb = ProjectBuilder()
-    pb.create_proj_dir()
-    pb.create_file(f'{pb.proj_name}.ipynb', template=True,
-                   temp_name='jupyter.ipynb.template')
-
-    return pb
-
-
 def create_ml_project(path: str or pathlib.PosixPath = None):
     """Creates a basic layout for a machine learning project using
      ProjectBuilder class.
