@@ -129,7 +129,8 @@ class ProjectBuilder:
 
         return True
 
-    def valid_path(self, path: str or pathlib.PosixPath, filename: str = None):
+    def valid_path(self, path: str or pathlib.PosixPath = None,
+                   filename: str = None):
         """The method does all the error checks to ensure file creation is
            possible.
 
@@ -153,11 +154,10 @@ class ProjectBuilder:
 
         if path is None:
             path = self.proj_dir
-
-        if type(path) == str:
+        elif type(path) == str:
             path = Path(path)
 
-        if not path.exists() or not path.is_dir():
+        if not path.is_dir():
             raise FileNotFoundError(f'No directory exists at {path}')
 
         if filename is None:
@@ -261,7 +261,7 @@ class ProjectBuilder:
                                  templates directory. Defaults to None.
 
         Raises:
-            TypeError: if the path entered is not to a file.
+            TypeError: if the path input is not to a file.
             FileNotFoundError: if the path input does not exist.
             FileNotFoundError: if the project directory does not exist.
             FileNotFoundError: if the template file does not exist.
@@ -291,18 +291,22 @@ class ProjectBuilder:
             main.write(write_to_file)
 
 
-def create_simple_project():
+def create_simple_project(path: str or pathlib.PosixPath = None):
     """Creates a simple project using the ProjectBuilder class.
 
     Notes:
         Creates the following files:
-        - {{ project_name }}.py
+        - {{ project_name }}.py: main python script
         - README.md
-        - todo.md
+        - TODO.md
         - LICENSE: MIT License.
-        - test_project.py: pytest
+        - test_project.py: pytest python script
         - setup.py
         - .gitignore: basic python gitignore.
+
+    Args:
+        path (str or pathlib.PosixPath, optional): for class attribute 'path'.
+                                                   Defaults to None.
 
     Returns:
         ProjectBuilder object: an instantiated ProjectBuilder class object
@@ -315,16 +319,21 @@ def create_simple_project():
     files = ['README.md',
              'TODO.md',
              'LICENSE',
-             'test_project.py',
              'setup.py',
              '.gitignore']
 
     for filename in files:
         pb.create_file(filename=filename, template=True)
 
+    # Create main python file
     filename = f'{pb.proj_name.replace("-","_").lower()}.py'
     pb.create_file(filename=filename, template=True,
                    temp_name='main.py.template')
+
+    # Create test python file
+    test_filename = 'test_' + filename
+    pb.create_file(filename=test_filename, template=True,
+                   temp_name='test_project.py.template')
 
     return pb
 

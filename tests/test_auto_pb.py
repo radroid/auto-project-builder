@@ -23,7 +23,7 @@ def pb():
 def sim_proj():
     """Uses the simple_project() method from the auto_pb module. and returns a
     ProjectBuilder instance."""
-    set_keyboard_input(['test', 'Raj Dholakia'])
+    set_keyboard_input(['test-2', 'Raj Dholakia'])
     sim_proj = create_simple_project()
     yield sim_proj
     rmtree(sim_proj.proj_dir)
@@ -177,7 +177,7 @@ def test_sim_proj_todo_exists(sim_proj):
 
 
 def test_sim_proj_main_exists(sim_proj):
-    path = sim_proj.proj_dir / 'test.py'
+    path = sim_proj.proj_dir / 'test_2.py'
     assert path.exists()
 
 
@@ -188,7 +188,7 @@ def test_sim_proj_license_exists(sim_proj):
 
 
 def test_sim_proj_test_exists(sim_proj):
-    path = sim_proj.proj_dir / 'test.py'
+    path = sim_proj.proj_dir / 'test_test_2.py'
     assert path.exists()
 
 
@@ -200,3 +200,25 @@ def test_sim_proj_setup_exists(sim_proj):
 def test_sim_proj_gitignore_exists(sim_proj):
     path = sim_proj.proj_dir / '.gitignore'
     assert path.exists()
+
+
+# Test Milstone 10. Simplify directory creation and Refactor
+# TODO: Test valid_path method.
+def test_valid_path_error_1(pb):
+    with pytest.raises(FileNotFoundError):
+        pb.valid_path(Path.cwd())
+
+
+def test_valid_path_error_2(pb):
+    pb.create_proj_dir()
+    path = Path.cwd() / 'does-not-exist'
+    with pytest.raises(FileNotFoundError):
+        pb.valid_path(path)
+
+
+def test_valid_path_error_3(pb):
+    pb.create_proj_dir()
+    path = pb.proj_dir / 'present.txt'
+    path.touch()
+    with pytest.raises(FileExistsError):
+        pb.valid_path(filename='present.txt')
