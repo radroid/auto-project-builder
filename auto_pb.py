@@ -129,16 +129,78 @@ class ProjectBuilder:
 
         return True
 
-    def create_dir(self):
+    def valid_path(self, path: str or pathlib.PosixPath = None,
+                   filename: str = None):
+        """The method does all the error checks to ensure file creation is
+           possible.
+
+        Args:
+            path (strorpathlib.PosixPath): path where the file/directory is to
+                                           be created.
+            filename (str): name of the file/directory to be created.
+
+        Raises:
+            FileNotFoundError: if no project directory exists.
+            FileNotFoundError: if the path input does not exist.
+            FileExistsError: if the file to be created exists at the path
+                             provided.
+
+        Returns:
+            pathlib.PosixPath: path with the filename (without if if None).
+        """
+        if self.proj_dir is None or not self.proj_dir.exists():
+            raise FileNotFoundError(f'Please create a project directory before'
+                                    f'creating a {filename} file.')
+
+        if path is None:
+            path = self.proj_dir
+        elif type(path) == str:
+            path = Path(path)
+
+        if not path.is_dir():
+            raise FileNotFoundError(f'No directory exists at {path}')
+
+        if filename is None:
+            return path
+
+        file_path = path / filename
+
+        if file_path.exists():
+            raise FileExistsError(f'File {filename} already exists at {path}.')
+
+        return file_path
+
+    def create_proj_dir(self):
         """The function creates a directory at the path specified and with the
         name input.
 
         Returns:
             pathlib.Posix object: This is the path to the directory created.
         """
-        new_dir = self.path / self.proj_name
+        proj_dir = self.path / self.proj_name
+        proj_dir.mkdir(exist_ok=True)
+        self.proj_dir = proj_dir
+        print(f'Created directory: {proj_dir}')
+        return proj_dir
+
+    def create_dir(self, dir_name: str, path: str or pathlib.PosixPath = None):
+        """The function creates a directory at the path specified and with the
+        name input.
+
+        Args:
+            dir_name (str): name of the directory to be created.
+            path (pathlib.PosixPath or str, optional): path or directory name
+                                                       inside the project
+                                                       directory where the
+                                                       file needs to be
+                                                       created.
+                                                       Defaults to None.
+
+        Returns:
+            pathlib.Posix object: This is the path to the directory created.
+        """
+        new_dir = self.valid_path(path, dir_name)
         new_dir.mkdir(exist_ok=True)
-        self.proj_dir = new_dir
         print(f'Created directory: {new_dir}')
         return new_dir
 
@@ -148,7 +210,7 @@ class ProjectBuilder:
         """Creates a file at a given path and a given name.
 
         Args:
-            filename (str): name of the file to created.
+            filename (str): name of the file to be created.
             template (bool, optional): True if there if the file needs to
                                        contain data contained in its template.
                                        Defaults to False.
@@ -165,27 +227,10 @@ class ProjectBuilder:
                                                        created.
                                                        Defaults to None.
 
-        Raises:
-            FileNotFoundError: if no project directory exists.
-            FileNotFoundError: if the path input does not exist.
-
         Returns:
             pathlib.PosixPath: path to the file created.
         """
-        if self.proj_dir is None or not self.proj_dir.exists():
-            raise FileNotFoundError(f'Please create a project directory before'
-                                    f'creating a {filename} file.')
-
-        if path is None:
-            path = self.proj_dir
-
-        if type(path) == str:
-            path = self.proj_dir / path
-
-        if not path.exists() or not path.is_dir():
-            raise FileNotFoundError(f'No directory exists at {path}')
-
-        file_path = path / filename
+        file_path = self.valid_path(path, filename)
         file_path.touch()
         print(f'Created {filename}: {file_path}')
 
@@ -195,14 +240,14 @@ class ProjectBuilder:
 
         if template:
             self.__add_to_file(path=file_path, template_dict=temp_dict,
-                               name=temp_name)
+                               template_name=temp_name)
             print(f'Text added to {filename}')
         print('')
 
         return file_path
 
     def __add_to_file(self, path: pathlib.PosixPath, template_dict: dict,
-                      name: str):
+                      template_name: str):
         """Add to a file from a template stored in the templates directory.
 
         Args:
@@ -212,25 +257,26 @@ class ProjectBuilder:
                                   The variable names matching a key in the
                                   dict will be replaced with the respective
                                   value.
-            name (str): name of the template file in the templates
-                        directory. Defaults to None.
+            template_name (str): template_name of the template file in the
+                                 templates directory. Defaults to None.
 
         Raises:
+            TypeError: if the path input is not to a file.
             FileNotFoundError: if the path input does not exist.
             FileNotFoundError: if the project directory does not exist.
             FileNotFoundError: if the template file does not exist.
         """
-        if not path.exists():
-            raise FileNotFoundError(f'You need to create a project '
-                                    f'directory and {self.proj_name}.py file.')
+        if not path.is_file():
+            raise TypeError('Please input path to a file.')
+        elif not path.exists():
+            raise FileNotFoundError(f'{path} does not exist.')
         elif self.proj_dir is None or not self.proj_dir.exists():
-            raise FileNotFoundError(f'You need to create a {self.proj_name}.py'
-                                    ' file.')
+            raise FileNotFoundError('You need to create a project directory.')
 
-        if name is None:
-            name = path.name + '.template'
+        if template_name is None:
+            template_name = path.name + '.template'
 
-        path_temp = Path.cwd() / 'templates' / name
+        path_temp = Path.cwd() / 'templates' / template_name
 
         if not path_temp.exists():
             raise FileNotFoundError('No main.py file template was'
@@ -245,18 +291,22 @@ class ProjectBuilder:
             main.write(write_to_file)
 
 
-def create_simple_project():
+def create_simple_project(path: str or pathlib.PosixPath = None):
     """Creates a simple project using the ProjectBuilder class.
 
     Notes:
         Creates the following files:
-        - {{ project_name }}.py
+        - {{ project_name }}.py: main python script
         - README.md
-        - todo.md
+        - TODO.md
         - LICENSE: MIT License.
-        - test_project.py: pytest
+        - test_project.py: pytest python script
         - setup.py
         - .gitignore: basic python gitignore.
+
+    Args:
+        path (str or pathlib.PosixPath, optional): for class attribute 'path'.
+                                                   Defaults to None.
 
     Returns:
         ProjectBuilder object: an instantiated ProjectBuilder class object
@@ -264,21 +314,26 @@ def create_simple_project():
                                project directory.
     """
     pb = ProjectBuilder()
-    pb.create_dir()
+    pb.create_proj_dir()
 
     files = ['README.md',
              'TODO.md',
              'LICENSE',
-             'test_project.py',
              'setup.py',
              '.gitignore']
 
     for filename in files:
         pb.create_file(filename=filename, template=True)
 
+    # Create main python file
     filename = f'{pb.proj_name.replace("-","_").lower()}.py'
     pb.create_file(filename=filename, template=True,
                    temp_name='main.py.template')
+
+    # Create test python file
+    test_filename = 'test_' + filename
+    pb.create_file(filename=test_filename, template=True,
+                   temp_name='test_project.py.template')
 
     return pb
 

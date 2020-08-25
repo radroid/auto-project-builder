@@ -23,7 +23,7 @@ def pb():
 def sim_proj():
     """Uses the simple_project() method from the auto_pb module. and returns a
     ProjectBuilder instance."""
-    set_keyboard_input(['test', 'Raj Dholakia'])
+    set_keyboard_input(['test-2', 'Raj Dholakia'])
     sim_proj = create_simple_project()
     yield sim_proj
     rmtree(sim_proj.proj_dir)
@@ -85,18 +85,18 @@ def test_instantiating_right_4(pb):
 
 # Test Milestone 2. Create Directory
 def test_create_dir_creation_1(pb):
-    new_dir = pb.create_dir()
+    new_dir = pb.create_proj_dir()
     assert new_dir.exists()
 
 
 def test_create_dir_creation_2(pb):
-    new_dir = pb.create_dir()
+    new_dir = pb.create_proj_dir()
     assert new_dir == Path.cwd().parent / 'test'
 
 
 # Test Milestone 3a. Create Readme.md
 def test_create_readme_creation(pb):
-    pb.create_dir()
+    pb.create_proj_dir()
     readme = pb.create_file('README.md')
     assert readme.exists()
 
@@ -110,7 +110,7 @@ def test_create_readme_creation_error(pb):
 def test_add_to_readme(pb):
     proj_name = 'test'
     author = 'Raj Dholakia'
-    pb.create_dir()
+    pb.create_proj_dir()
     readme = pb.create_file('README.md', template=True)
 
     text_to_write = f'# {proj_name}\nWelcome to {proj_name}!\n\n\n' \
@@ -124,7 +124,7 @@ def test_add_to_readme(pb):
 
 # Test Milestone 5. Create other files using Templates.
 def test_create_todo_creation(pb):
-    pb.create_dir()
+    pb.create_proj_dir()
     todo = pb.create_file('TODO.md')
     assert todo.exists()
 
@@ -135,14 +135,14 @@ def test_create_todo_creation_error(pb):
 
 
 def test_create_main_creation_1(pb):
-    pb.create_dir()
+    pb.create_proj_dir()
     filename = f'{pb.proj_name.replace("-","_")}.py'
     main = pb.create_file(f'{filename}')
     assert main.exists()
 
 
 def test_create_main_creation_2(pb):
-    pb.create_dir()
+    pb.create_proj_dir()
     filename = f'{pb.proj_name.replace("-","_")}.py'
     main = pb.create_file(f'{filename}', template=True,
                           temp_name='main.py.template')
@@ -155,7 +155,7 @@ def test_create_main_creation_error_1(pb):
 
 
 def test_create_main_creation_error_2(pb):
-    pb.create_dir()
+    pb.create_proj_dir()
     filename = f'{pb.proj_name.replace("-","_")}.py'
     with pytest.raises(FileNotFoundError):
         pb.create_file(f'{filename}', template=True)
@@ -177,7 +177,7 @@ def test_sim_proj_todo_exists(sim_proj):
 
 
 def test_sim_proj_main_exists(sim_proj):
-    path = sim_proj.proj_dir / 'test.py'
+    path = sim_proj.proj_dir / 'test_2.py'
     assert path.exists()
 
 
@@ -188,7 +188,7 @@ def test_sim_proj_license_exists(sim_proj):
 
 
 def test_sim_proj_test_exists(sim_proj):
-    path = sim_proj.proj_dir / 'test.py'
+    path = sim_proj.proj_dir / 'test_test_2.py'
     assert path.exists()
 
 
@@ -200,3 +200,25 @@ def test_sim_proj_setup_exists(sim_proj):
 def test_sim_proj_gitignore_exists(sim_proj):
     path = sim_proj.proj_dir / '.gitignore'
     assert path.exists()
+
+
+# Test Milstone 10. Simplify directory creation and Refactor
+# TODO: Test valid_path method.
+def test_valid_path_error_1(pb):
+    with pytest.raises(FileNotFoundError):
+        pb.valid_path(Path.cwd())
+
+
+def test_valid_path_error_2(pb):
+    pb.create_proj_dir()
+    path = Path.cwd() / 'does-not-exist'
+    with pytest.raises(FileNotFoundError):
+        pb.valid_path(path)
+
+
+def test_valid_path_error_3(pb):
+    pb.create_proj_dir()
+    path = pb.proj_dir / 'present.txt'
+    path.touch()
+    with pytest.raises(FileExistsError):
+        pb.valid_path(filename='present.txt')
