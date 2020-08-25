@@ -3,7 +3,7 @@
 # import pytest
 from tests.tud_test_base import set_keyboard_input
 from auto_pb import ProjectBuilder
-from auto_pb import create_simple_project
+from auto_pb import create_simple_project, create_ml_project
 from pathlib import Path
 from shutil import rmtree
 import pytest
@@ -12,7 +12,7 @@ import pytest
 # Part of code Refactoring
 @pytest.fixture()
 def pb():
-    set_keyboard_input(['test', 'Raj Dholakia'])
+    set_keyboard_input(['test', 'RaDroid'])
     pb = ProjectBuilder()
     yield pb
     if pb.proj_dir is not None and pb.proj_dir.exists():
@@ -21,12 +21,22 @@ def pb():
 
 @pytest.fixture(scope="module")
 def sim_proj():
-    """Uses the simple_project() method from the auto_pb module. and returns a
-    ProjectBuilder instance."""
-    set_keyboard_input(['test-2', 'Raj Dholakia'])
+    """Uses the create_simple_project() method from the auto_pb module and
+    returns a ProjectBuilder instance."""
+    set_keyboard_input(['simple-project', 'RaDroid'])
     sim_proj = create_simple_project()
     yield sim_proj
     rmtree(sim_proj.proj_dir)
+
+
+@pytest.fixture(scope="module")
+def ml_proj():
+    """Uses the create_ml_project() method from the auto_pb module and returns a
+    ProjectBuilder instance."""
+    set_keyboard_input(['machine-learning-project', 'RaDroid'])
+    ml_proj = create_ml_project()
+    yield ml_proj
+    rmtree(ml_proj.proj_dir)
 
 
 # Test Milestone 1. First User Input
@@ -80,16 +90,16 @@ def test_instantiating_right_3(pb):
 
 def test_instantiating_right_4(pb):
     names_tup = pb.proj_name, pb.author
-    assert names_tup == ('test', 'Raj Dholakia')
+    assert names_tup == ('test', 'RaDroid')
 
 
 # Test Milestone 2. Create Directory
-def test_create_dir_creation_1(pb):
+def test_create_proj_dir_creation_1(pb):
     new_dir = pb.create_proj_dir()
     assert new_dir.exists()
 
 
-def test_create_dir_creation_2(pb):
+def test_create_proj_dir_creation_2(pb):
     new_dir = pb.create_proj_dir()
     assert new_dir == Path.cwd().parent / 'test'
 
@@ -109,7 +119,7 @@ def test_create_readme_creation_error(pb):
 # Test Milestone 3b. Add text to Readme.md
 def test_add_to_readme(pb):
     proj_name = 'test'
-    author = 'Raj Dholakia'
+    author = 'RaDroid'
     pb.create_proj_dir()
     readme = pb.create_file('README.md', template=True)
 
@@ -177,7 +187,7 @@ def test_sim_proj_todo_exists(sim_proj):
 
 
 def test_sim_proj_main_exists(sim_proj):
-    path = sim_proj.proj_dir / 'test_2.py'
+    path = sim_proj.proj_dir / 'simple_project.py'
     assert path.exists()
 
 
@@ -188,7 +198,7 @@ def test_sim_proj_license_exists(sim_proj):
 
 
 def test_sim_proj_test_exists(sim_proj):
-    path = sim_proj.proj_dir / 'test_test_2.py'
+    path = sim_proj.proj_dir / 'test_simple_project.py'
     assert path.exists()
 
 
@@ -202,8 +212,7 @@ def test_sim_proj_gitignore_exists(sim_proj):
     assert path.exists()
 
 
-# Test Milstone 10. Simplify directory creation and Refactor
-# TODO: Test valid_path method.
+# Test Milestone 10. Simplify directory creation and Refactor
 def test_valid_path_error_1(pb):
     with pytest.raises(FileNotFoundError):
         pb.valid_path(Path.cwd())
@@ -222,3 +231,69 @@ def test_valid_path_error_3(pb):
     path.touch()
     with pytest.raises(FileExistsError):
         pb.valid_path(filename='present.txt')
+
+
+def test_create_dir_1(pb):
+    pb.create_proj_dir()
+    pb.create_dir('hello_dir')
+    path = pb.proj_dir / 'hello_dir'
+    assert path.exists()
+
+
+def test_create_dir_2(pb):
+    pb.create_proj_dir()
+    path = pb.proj_dir / 'hello_dir' / 'sub_dir'
+    with pytest.raises(FileNotFoundError):
+        pb.create_dir(path)
+
+
+# Test Milestone 12. Function for ML project
+def test_ml_proj_dir_exists(ml_proj):
+    assert ml_proj.proj_dir.exists()
+
+
+def test_ml_proj_dir_data(ml_proj):
+    data_dir = ml_proj.proj_dir / 'data'
+    assert data_dir.is_dir()
+
+
+def test_ml_proj_dir_tests(ml_proj):
+    tests_dir = ml_proj.proj_dir / 'tests'
+    assert tests_dir.is_dir()
+
+
+def test_ml_proj_dir_tests_file(ml_proj):
+    tests_file = ml_proj.proj_dir / 'tests' / \
+        'test_machine_learning_project.py'
+    assert tests_file.is_file()
+
+
+def test_ml_proj_dir_notebooks(ml_proj):
+    notebooks_dir = ml_proj.proj_dir / 'notebooks'
+    assert notebooks_dir.is_dir()
+
+
+def test_ml_proj_dir_notebooks_file(ml_proj):
+    notebooks_file = ml_proj.proj_dir / 'notebooks' / \
+        'machine-learning-project.ipynb'
+    assert notebooks_file.is_file()
+
+
+def test_ml_proj_readme_exists(ml_proj):
+    path = ml_proj.proj_dir / 'README.md'
+    assert path.exists()
+
+
+def test_ml_proj_todo_exists(ml_proj):
+    path = ml_proj.proj_dir / 'TODO.md'
+    assert path.exists()
+
+
+def test_ml_proj_license_exists(ml_proj):
+    path = ml_proj.proj_dir / 'LICENSE'
+    assert path.exists()
+
+
+def test_ml_proj_gitignore_exists(ml_proj):
+    path = ml_proj.proj_dir / '.gitignore'
+    assert path.exists()

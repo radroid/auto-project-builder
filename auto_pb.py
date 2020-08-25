@@ -404,7 +404,7 @@ def create_ml_project(path: str or pathlib.PosixPath = None):
             'notebooks']
 
     for dir_name in dirs:
-        ml_pb.create_dir(dir_name)
+        ml_pb.create_dir(dir_name=dir_name)
 
     # Create main jupyter notebook.
     notebook = f'{ml_pb.proj_name.lower()}.ipynb'
@@ -421,8 +421,6 @@ def create_ml_project(path: str or pathlib.PosixPath = None):
     ml_pb.create_file(filename=test_filename, template=True,
                       temp_name='test_project.py.template',
                       path=path)
-    
-    ml_pb.create_dir()
 
     return ml_pb
 
