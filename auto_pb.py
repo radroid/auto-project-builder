@@ -6,6 +6,7 @@ Update: The refactored code makes use of a class to modularise project \
 """
 
 
+import os
 import pathlib
 from pathlib import Path
 import re
@@ -36,8 +37,9 @@ class ProjectBuilder:
                 For class attribute 'path'.
 
         Raises:
+            TypeError: if the path provided is not an absolute path.
             FileNotFoundError: if the path provided does not exist.
-            TypeError: if the path provided is not a directory.
+            TypeError: if the path input is not to a directory.
         """
         if path is None:
             path = Path.cwd().parent
@@ -45,10 +47,14 @@ class ProjectBuilder:
             if type(path) == str:
                 path = Path(path)
 
+            if not path.is_absolute():
+                raise TypeError(f'Path entered is not an absolute path.\n'
+                                f'path: {path}')
             if not path.exists():
-                raise FileNotFoundError('The path provided, does not exist.')
+                raise FileNotFoundError(f'The path provided, does not exist.\n'
+                                        f'path: {path}')
             if not path.is_dir():
-                raise TypeError('Please input a path to a directory.')
+                raise TypeError(f'No directory present at {path}')
 
         self.path = path
         self.proj_dir = None
@@ -147,6 +153,7 @@ class ProjectBuilder:
         Raises:
             FileNotFoundError: if no project directory exists.
             FileNotFoundError: if the path input does not exist.
+            TypeError: if the path input is not a directory.
             FileExistsError: if the file to be created exists at the path
                              provided.
 
@@ -162,8 +169,11 @@ class ProjectBuilder:
         elif type(path) == str:
             path = Path(path)
 
+        if not path.exists():
+            raise FileNotFoundError(f'The path provided, does not exist.\n \
+                                    path: {path}')
         if not path.is_dir():
-            raise FileNotFoundError(f'No directory exists at {path}')
+            raise TypeError(f'No directory present at {path}')
 
         if filename is None:
             return path
@@ -253,27 +263,26 @@ class ProjectBuilder:
                          'author_name': self.author}
 
         if template:
-            self.__add_to_file(path=file_path, template_dict=temp_dict,
+            self.__add_to_file(path_to_file=file_path, template_dict=temp_dict,
                                template_name=temp_name)
             print(f'Text added to {filename}')
         print('')
 
         return file_path
 
-    def __add_to_file(self, path: pathlib.PosixPath, template_dict: dict,
-                      template_name: str):
+    def __add_to_file(self, path_to_file: pathlib.PosixPath,
+                      template_dict: dict, template_name: str):
         """Add to a file from a template stored in the templates directory.
 
         Args:
-            path (pathlib.PosixPath):\
+            path_to_file (pathlib.PosixPath):\
                 path to the file that needs to be updated.
             template_dict (dict):\
                 used to customise parts of the template. The variable names \
                 matching a key in the dict will be replaced with the \
                 respective value.
             template_name (str):\
-                template_name of the template file in the templates directory.\
-                Defaults to None.
+                template_name of the template file in the templates directory.
 
         Raises:
             TypeError: if the path input is not to a file.
@@ -281,15 +290,15 @@ class ProjectBuilder:
             FileNotFoundError: if the project directory does not exist.
             FileNotFoundError: if the template file does not exist.
         """
-        if not path.is_file():
+        if not path_to_file.is_file():
             raise TypeError('Please input path to a file.')
-        elif not path.exists():
-            raise FileNotFoundError(f'{path} does not exist.')
+        elif not path_to_file.exists():
+            raise FileNotFoundError(f'{path_to_file} does not exist.')
         elif self.proj_dir is None or not self.proj_dir.exists():
             raise FileNotFoundError('You need to create a project directory.')
 
         if template_name is None:
-            template_name = path.name + '.template'
+            template_name = path_to_file.name + '.template'
 
         path_temp = Path.cwd() / 'templates' / template_name
 
@@ -302,8 +311,50 @@ class ProjectBuilder:
 
         write_to_file = template.render(template_dict)
 
-        with path.open('w') as main:
+        with path_to_file.open('w') as main:
             main.write(write_to_file)
+
+    def create_conda_env(self,
+                         yml_file_path: str or pathlib.PosixPath = None):
+        """Creates a conda environment from a .yml file for a project.
+
+        Args:
+            yml_file_path (strorpathlib.PosixPath, optional):\
+                [description]. Defaults to None. If None a new .yml file is \
+                created using a environment.yml.template file from the \
+                templates directory.
+
+        Raises:
+            TypeError: if the path provided is not an absolute path.
+            TypeError: the path input is not to a .yml file.
+            FileNotFoundError: if the path provided does not exist.
+        """
+        command = 'conda env create -f {} --prefix {}'
+        create_loc = self.proj_dir / 'env'
+        template_path = Path.cwd() / 'other-files'
+
+        if yml_file_path is None:
+            yml_file_path = template_path / 'environment.yml'
+
+            if yml_file_path.exists():
+                yml_file_path.unlink()
+
+            self.create_file('environment.yml', template=True,
+                             temp_dict={'env_name': str(create_loc)},
+                             path=template_path)
+        else:
+            if not yml_file_path.is_absolute():
+                raise TypeError(f'Path entered is not an absolute path.\n'
+                                f'path: {yml_file_path}')
+            if not yml_file_path.suffix == '.yml':
+                raise TypeError(f'Path input is not to a .yml file.\n'
+                                f'{yml_file_path}')
+
+        if not yml_file_path.exists():
+            raise FileNotFoundError(f'No .yml file found at {yml_file_path}')
+
+        print(f'Creating conda environment at {create_loc}')
+        os.system(command.format(yml_file_path, create_loc))
 
 
 def create_simple_project(path: str or pathlib.PosixPath = None):
@@ -353,7 +404,8 @@ def create_simple_project(path: str or pathlib.PosixPath = None):
     return pb
 
 
-def create_ml_project(path: str or pathlib.PosixPath = None):
+def create_ml_project(path: str or pathlib.PosixPath = None,
+                      create_conda_env: bool = False):
     """Creates a basic layout for a machine learning project using
      ProjectBuilder class.
 
@@ -370,21 +422,27 @@ def create_ml_project(path: str or pathlib.PosixPath = None):
         ├── notebooks/
         |   └── {{ project_name }}.ipynb: main jupyter notebook
         |
+        ├── env/ : conda environment for the project
+        |
         ├── README.md
         ├── TODO.md
         ├── LICENSE: MIT License.
         └── .gitignore: basic python gitignore.
 
     Args:
-        path (str or pathlib.PosixPath, optional):
+        path (str or pathlib.PosixPath, optional):\
             for class attribute 'path'. Defaults to None.
+
+        create_conda_env (bool):\
+            if True the function creates a conda environment in the project \
+            folder. Default to False.
 
     Returns:
         ProjectBuilder object:
             an instantiated ProjectBuilder class object whose attributes can
              be used to locate the project directory.
     """
-    ml_pb = ProjectBuilder(path=path,)
+    ml_pb = ProjectBuilder(path=path)
     ml_pb.create_proj_dir()
 
     files = ['README.md',
@@ -418,8 +476,11 @@ def create_ml_project(path: str or pathlib.PosixPath = None):
                       temp_name='test_project.py.template',
                       path=path)
 
+    if create_conda_env:
+        ml_pb.create_conda_env()
+
     return ml_pb
 
 
 if __name__ == '__main__':
-    create_ml_project()
+    ml_pb = create_ml_project()

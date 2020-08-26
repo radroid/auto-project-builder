@@ -1,5 +1,5 @@
-# {{ project_name }}
-Welcome to {{ project_name }}!
+# {{ project_name.replace('-', ' ').replace('_', ' ').title() }}
+Welcome to {{ project_name.replace('-', ' ').replace('_', ' ').title() }}!
 
 
 Created by {{ author_name }}.

@@ -6,6 +6,7 @@ from auto_pb import ProjectBuilder
 from auto_pb import create_simple_project, create_ml_project
 from pathlib import Path
 from shutil import rmtree
+import subprocess
 import pytest
 
 
@@ -118,7 +119,7 @@ def test_create_readme_creation_error(pb):
 
 # Test Milestone 3b. Add text to Readme.md
 def test_add_to_readme(pb):
-    proj_name = 'test'
+    proj_name = 'Test'
     author = 'RaDroid'
     pb.create_proj_dir()
     readme = pb.create_file('README.md', template=True)
@@ -297,3 +298,19 @@ def test_ml_proj_license_exists(ml_proj):
 def test_ml_proj_gitignore_exists(ml_proj):
     path = ml_proj.proj_dir / '.gitignore'
     assert path.exists()
+
+
+def test_ml_proj_conda_env():
+    set_keyboard_input(['machine-learning-project-2', 'RaDroid'])
+    ml_proj = create_ml_project(create_conda_env=True)
+
+    try:
+        # Get conda environments
+        envs = subprocess.check_output(['conda', 'env', 'list'])
+        envs_list = [env.strip() for env in str(envs).split('\\n')]
+
+        proj_env = ml_proj.proj_dir / 'env'
+        assert str(proj_env) in envs_list
+    finally:
+        if ml_proj.proj_dir.exists():
+            rmtree(ml_proj.proj_dir)

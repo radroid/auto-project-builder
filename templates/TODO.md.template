@@ -1,4 +1,4 @@
-# TODO for {{ project_name }}
+# TODO for {{ project_name.replace('-', ' ').replace('_', ' ').title() }}
 
 - [ ] Create project structure for {{ project_name }}
 - [ ] Add all the information that can be added to README.md
