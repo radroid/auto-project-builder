@@ -300,7 +300,7 @@ def test_ml_proj_gitignore_exists(ml_proj):
     assert path.exists()
 
 
-def test_ml_proj_conda_env():
+def ml_proj_conda_env():
     set_keyboard_input(['machine-learning-project-2', 'RaDroid'])
     ml_proj = create_ml_project(create_conda_env=True)
 
