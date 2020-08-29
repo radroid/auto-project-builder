@@ -260,7 +260,8 @@ class ProjectBuilder:
 
         if temp_dict is None:
             temp_dict = {'project_name': self.proj_name,
-                         'author_name': self.author}
+                         'author_name': self.author,
+                         'git_username': 'radroid'}
 
         if template:
             self.__add_to_file(path_to_file=file_path, template_dict=temp_dict,

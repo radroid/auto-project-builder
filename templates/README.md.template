@@ -36,7 +36,7 @@ Welcome to {{ project_name.replace('-', ' ').replace('_', ' ').title() }}!
 > *Note: use `cd` command to navigate to your projects directory.*
 
 ```bash
-git clone {{ git_repo_link }}.git
+git clone https://github.com/{{ git_username }}/{{ project_name }}.git
 ```
 
 2. Create a virtual environment in the auto-project-builder directory.
