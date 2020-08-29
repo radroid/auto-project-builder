@@ -117,22 +117,6 @@ def test_create_readme_creation_error(pb):
         pb.create_file('README.md')
 
 
-# Test Milestone 3b. Add text to Readme.md
-def test_add_to_readme(pb):
-    proj_name = 'Test'
-    author = 'RaDroid'
-    pb.create_proj_dir()
-    readme = pb.create_file('README.md', template=True)
-
-    text_to_write = f'# {proj_name}\nWelcome to {proj_name}!\n\n\n' \
-                    f'Created by {author}.'
-
-    with readme.open('r') as read:
-        text_written = read.read()
-
-    assert text_to_write == text_written
-
-
 # Test Milestone 5. Create other files using Templates.
 def test_create_todo_creation(pb):
     pb.create_proj_dir()
