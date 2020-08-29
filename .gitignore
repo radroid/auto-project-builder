@@ -132,3 +132,4 @@ dmypy.json
 project-builder-venv/
 .vscode/settings.json
 .DS_Store
+templates/README.md
