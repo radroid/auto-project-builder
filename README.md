@@ -5,7 +5,7 @@ The aim is to automate the repetitive task of creating directories and files for
 [![Powered by](https://forthebadge.com/images/badges/powered-by-responsibility.svg)](https://forthebadge.com) 
 [![for real](https://forthebadge.com/images/badges/fo-real.svg)](https://forthebadge.com)
 
-Function:
+Functions:
 ```python 
 create_simple_project()
 ```
