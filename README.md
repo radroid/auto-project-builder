@@ -98,7 +98,7 @@ You can refer to [this guide](https://www.kevinlondon.com/2015/05/05/code-review
 \*I will be creating a `Contributions through Code Reviews` section.
 
 ## Support
-I am looking for a job ooportunity in Canada. It would mean a lot if we could connect and discuss what we can do for each other.
+I am looking for a job ooportunity as a Software Developer and eventually Machine Learning Engineer in Canada. It would mean a lot if we could connect and discuss what we can do for each other.
 Follow and Reach out to me one of the following places!
 
 ![Github Follow](https://img.shields.io/github/followers/radroid?label=Follow&style=social) ![Twitter Follow](https://img.shields.io/twitter/follow/Raj_Dholakia001?label=Follow&style=social)
