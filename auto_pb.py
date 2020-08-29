@@ -314,8 +314,7 @@ class ProjectBuilder:
         with path_to_file.open('w') as main:
             main.write(write_to_file)
 
-    def create_conda_env(self,
-                         yml_file_path: str or pathlib.PosixPath = None):
+    def create_conda_env(self, yml_file_path: str or pathlib.PosixPath = None):
         """Creates a conda environment from a .yml file for a project.
 
         Args:
@@ -353,8 +352,15 @@ class ProjectBuilder:
         if not yml_file_path.exists():
             raise FileNotFoundError(f'No .yml file found at {yml_file_path}')
 
-        print(f'Creating conda environment at {create_loc}')
+        print(f'Creating conda environment at {create_loc}\n\n')
         os.system(command.format(yml_file_path, create_loc))
+
+    def create_pipenv(self):
+        command = 'python3 -m venv {}'
+        create_loc = self.proj_dir / 'venv'
+
+        print(f'Creating Pipenv environment at {create_loc}\n\n')
+        os.system(command.format(create_loc))
 
 
 def create_simple_project(path: str or pathlib.PosixPath = None):
@@ -362,13 +368,14 @@ def create_simple_project(path: str or pathlib.PosixPath = None):
 
     Notes:
         Creates the following files in the project directory:
-        - {{ project_name }}.py: main python script
+        - {{ project_name }}.py : main python script
         - README.md
         - TODO.md
-        - LICENSE: MIT License.
-        - test_project.py: pytest python script
+        - LICENSE : MIT License.
+        - test_project.py : pytest python script
         - setup.py
-        - .gitignore: basic python gitignore.
+        - .gitignore : basic python gitignore.
+        - venv : python 3 virtual environment directory.
 
     Args:
         path (str or pathlib.PosixPath, optional): for class attribute 'path'.
@@ -400,6 +407,8 @@ def create_simple_project(path: str or pathlib.PosixPath = None):
     test_filename = 'test_' + filename
     pb.create_file(filename=test_filename, template=True,
                    temp_name='test_project.py.template')
+
+    pb.create_pipenv()
 
     return pb
 
@@ -483,4 +492,7 @@ def create_ml_project(path: str or pathlib.PosixPath = None,
 
 
 if __name__ == '__main__':
-    ml_pb = create_ml_project()
+    # ml_pb = create_ml_project()
+    pb = ProjectBuilder()
+    pb.create_proj_dir()
+    pb.create_pipvenv()
