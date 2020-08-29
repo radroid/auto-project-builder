@@ -213,6 +213,12 @@ def test_sim_proj_gitignore_exists(sim_proj):
     assert path.exists()
 
 
+# Test Milestone 15. Create Pipenv virtual environment.
+def test_sim_proj_venv_exists(sim_proj):
+    path = sim_proj.proj_dir / 'venv'
+    assert path.exists()
+
+
 # Test Milestone 10. Simplify directory creation and Refactor
 def test_valid_path_error_1(pb):
     with pytest.raises(FileNotFoundError):
