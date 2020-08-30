@@ -493,7 +493,4 @@ def create_ml_project(path: str or pathlib.PosixPath = None,
 
 
 if __name__ == '__main__':
-    # ml_pb = create_ml_project()
-    pb = ProjectBuilder()
-    pb.create_proj_dir()
-    pb.create_pipvenv()
+    create_simple_project()
