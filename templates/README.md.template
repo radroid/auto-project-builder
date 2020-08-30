@@ -5,8 +5,11 @@ Welcome to {{ project_name.replace('-', ' ').replace('_', ' ').title() }}!
 
 **Author: {{ author_name }}.**
 
+[![that's how](https://forthebadge.com/images/badges/thats-how-they-get-you.svg)](https://forthebadge.com) 
 [![Built with](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com) 
-[![Makes People smile](https://forthebadge.com/images/badges/makes-people-smile.svg)](https://forthebadge.com)
+[![Makes People smile](https://forthebadge.com/images/badges/makes-people-smile.svg)](https://forthebadge.com) 
+
+*tags: *
 
 [![License](https://img.shields.io/github/license/{{ git_username }}/{{ project_name }}?style=for-the-badge)](https://github.com/{{ git_username }}/{{ project_name }}/blob/master/LICENSE)
 ![Last Commit](https://img.shields.io/github/last-commit/{{ git_username }}/{{ project_name }}?style=for-the-badge) 
